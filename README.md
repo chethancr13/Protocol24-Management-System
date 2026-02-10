@@ -1,73 +1,153 @@
-# Welcome to your Lovable project
+# Hackathon Management Dashboard
 
-## Project info
+A modern web application that helps organizers manage a college hackathon efficiently — from participant registration to attendance tracking and team formation.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+## 🚀 Project Overview
 
-There are several ways of editing your application.
+This system simulates a real hackathon control panel used by event coordinators.
+It allows organizers to register participants, monitor their check-in/check-out status, and dynamically create teams only from participants who are physically present.
 
-**Use Lovable**
+The application is fully frontend-based and stores all data in the browser using local storage.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ✨ Features
 
-**Use your preferred IDE**
+### 1. Participant Registration
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+* Register participants with:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+  * Full Name
+  * Email
+  * College / Organization
+  * Primary Skill
+  * Hackathon Track
+* Validates email format
+* Prevents duplicate registrations
+* Automatically resets form after successful registration
 
-Follow these steps:
+### 2. Participant Dashboard
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* View all participants in a table
+* Search by name or email
+* Filter by hackathon track
+* Sort alphabetically
+* Displays:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+  * Name
+  * Track
+  * Skill
+  * Team assignment
+  * Check-in status
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 3. Check-In / Check-Out System
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+* Organizer can mark participants as:
+
+  * Not Checked-In
+  * Checked-In
+  * Checked-Out
+* Checked-out participants are automatically removed from teams
+* Visual status badges (green, red, gray)
+
+### 4. Team Management
+
+* Create teams with unique names
+* Assign participants to teams
+* Maximum 4 members per team
+* Prevents assigning non-checked-in participants
+* Remove participants from teams
+
+### 5. User Interface
+
+* Modern dashboard layout
+* Sidebar navigation
+* Responsive design
+* Card-based UI
+* Animated feedback messages
+
+---
+
+## 🧠 Technology Stack
+
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* shadcn UI components
+* Browser LocalStorage
+
+---
+
+## 💾 Data Handling
+
+This project does not use a backend database.
+All participant and team data are stored locally in the browser using LocalStorage, allowing the application to run entirely on the client side.
+
+---
+
+## 🛠️ Installation (Run Locally)
+
+1. Clone the repository
+
+```
+git clone <your-repository-url>
+```
+
+2. Navigate to project folder
+
+```
+cd hackathon-management-dashboard
+```
+
+3. Install dependencies
+
+```
+npm install
+```
+
+4. Run development server
+
+```
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will start at:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+http://localhost:5173
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🌐 Live Demo
 
-## What technologies are used for this project?
+Hosted using GitHub Pages.
 
-This project is built with:
+(Place your deployed website link here)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 📌 Usage Scenario
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+During a hackathon event:
 
-## Can I connect a custom domain to my Lovable project?
+* Organizer registers participants at entry desk
+* Marks attendance using check-in button
+* Forms teams from present participants
+* Tracks teams and participation live
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 👤 Author
+Vaishnavi Deshpande
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 📄 License
+
+This project is for academic and demonstration purposes.
+
+
