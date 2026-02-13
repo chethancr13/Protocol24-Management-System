@@ -124,10 +124,9 @@ http://localhost:5173
 
 ## 🌐 Live Demo
 
-Hosted using GitHub Pages.
+Hosted using Netlify wesite.
 
-(Place your deployed website link here)
-
+hacksdashboardproject.netlify.app
 ---
 
 ## 📌 Usage Scenario
@@ -149,5 +148,6 @@ Vaishnavi Deshpande
 ## 📄 License
 
 This project is for academic and demonstration purposes.
+
 
 
