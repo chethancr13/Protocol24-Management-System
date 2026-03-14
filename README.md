@@ -78,4 +78,4 @@ Organizers can use the following default credentials to access the system:
 
 ## 📄 License
 
-This project is developed for **Protocol 24** hackathon management and demonstration. Developed by **NullPoint Team**.
+This project is developed for **Protocol 24** hackathon management and demonstration.
