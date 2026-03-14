@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, LogOut, Activity } from 'lucide-react';
+import { toast } from 'sonner';
 import { Participant } from '@/types/hackathon';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSharedState } from '@/lib/shared-storage';
+import { TEAM_ACCOUNTS } from '@/config/team';
 import {
   CommandDialog,
   CommandInput,
@@ -18,6 +21,12 @@ const pageTitles: Record<string, string> = {
   '/register': 'Register Participant',
   '/participants': 'Participants',
   '/teams': 'Team Management',
+  '/project-submissions': 'Project Submissions',
+  '/seating': 'Seating Chart',
+  '/team-checkin': 'Team Check-In',
+  '/expenses': 'Expenses',
+  '/logistics': 'Goods & Logistics',
+  '/volunteers': 'Volunteers',
 };
 
 const pages = [
@@ -25,19 +34,39 @@ const pages = [
   { name: 'Register Participant', path: '/register' },
   { name: 'Participants', path: '/participants' },
   { name: 'Team Management', path: '/teams' },
+  { name: 'Project Submissions', path: '/project-submissions' },
+  { name: 'Seating Chart', path: '/seating' },
+  { name: 'Team Check-In', path: '/team-checkin' },
+  { name: 'Expenses', path: '/expenses' },
+  { name: 'Goods & Logistics', path: '/logistics' },
+  { name: 'Volunteers', path: '/volunteers' },
 ];
 
 interface AppHeaderProps {
   onMenuToggle: () => void;
   isMobile: boolean;
+  onActivityToggle?: () => void;
+  activityVisible?: boolean;
 }
 
-const AppHeader = ({ onMenuToggle, isMobile }: AppHeaderProps) => {
+const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }: AppHeaderProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const title = pageTitles[location.pathname] || 'Dashboard';
   const [open, setOpen] = useState(false);
-  const [participants] = useLocalStorage<Participant[]>('hackathon-participants', []);
+  const { state, updatePresence } = useSharedState();
+  const participants = state.participants || [];
+  const currentUser = JSON.parse(localStorage.getItem('protocol24-user') || '{}');
+
+  useEffect(() => {
+    updatePresence(title);
+    const interval = setInterval(() => updatePresence(title), 5000);
+    return () => clearInterval(interval);
+  }, [title]);
+
+  const activeUsers = Object.entries(state.presence || {})
+    .filter(([name, data]) => name !== currentUser.name && (Date.now() - data.lastSeen < 10000))
+    .slice(0, 3);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -79,11 +108,64 @@ const AppHeader = ({ onMenuToggle, isMobile }: AppHeaderProps) => {
               <Search className="w-5 h-5" />
             </button>
           )}
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-primary/20 flex items-center justify-center">
-              <span className="text-xs font-bold text-primary">AD</span>
+          <div className="flex items-center gap-3">
+            {/* Presence Indicators */}
+            {activeUsers.length > 0 && (
+              <div className="hidden lg:flex items-center -space-x-2 mr-2">
+                {activeUsers.map(([name, data]) => (
+                  <div 
+                    key={name}
+                    className="w-7 h-7 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-border/10 transition-transform hover:translate-y-[-2px] cursor-help"
+                    style={{ backgroundColor: (TEAM_ACCOUNTS[data.role as any] || {color: '#888'}).color }}
+                    title={`${name} is editing ${data.currentModule}`}
+                  >
+                    {name.charAt(0).toUpperCase()}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div 
+              className="w-9 h-9 rounded-xl flex items-center justify-center ring-2 ring-background shadow-inner"
+              style={{ backgroundColor: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color + '33' }}
+            >
+              <span className="text-xs font-bold" style={{ color: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color }}>
+                {currentUser.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('') : 'NP'}
+              </span>
             </div>
-            {!isMobile && <span className="text-sm font-medium text-foreground">Vaishnavi Deshpande</span>}
+            {!isMobile && (
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-foreground">{currentUser.name || 'NullPoint'}</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color }}>
+                  {currentUser.role || 'Super Admin'}
+                </span>
+              </div>
+            )}
+            {!isMobile && onActivityToggle && (
+              <button
+                onClick={onActivityToggle}
+                className={`p-2 rounded-xl border transition-all ${
+                  activityVisible 
+                    ? 'bg-primary/10 border-primary/20 text-primary' 
+                    : 'border-border text-muted-foreground hover:bg-muted/50'
+                }`}
+                title={activityVisible ? "Hide Activity Feed" : "Show Activity Feed"}
+              >
+                <Activity className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              onClick={() => {
+                localStorage.removeItem('protocol24-auth');
+                localStorage.removeItem('protocol24-user');
+                navigate('/login');
+                toast.success('Session Terminated');
+              }}
+              className="ml-2 p-2 rounded-xl border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all text-muted-foreground"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </header>

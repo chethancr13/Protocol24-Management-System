@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { UserPlus } from 'lucide-react';
 import { Participant, HackathonTrack } from '@/types/hackathon';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSharedState } from '@/lib/shared-storage';
 
 const tracks: HackathonTrack[] = ['Web', 'AI/ML', 'Blockchain', 'Open Innovation'];
 
 const RegisterPage = () => {
-  const [participants, setParticipants] = useLocalStorage<Participant[]>('hackathon-participants', []);
+  const { state, updateState } = useSharedState();
+  const participants = state.participants || [];
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -50,7 +51,11 @@ const RegisterPage = () => {
       teamName: null,
     };
 
-    setParticipants(prev => [...prev, newParticipant]);
+    updateState(prev => ({
+      ...prev,
+      participants: [...prev.participants, newParticipant]
+    }), `registered ${newParticipant.name}`);
+    
     setForm({ name: '', email: '', college: '', skill: '', track: '' });
     toast.success(`${newParticipant.name} registered successfully!`);
   };

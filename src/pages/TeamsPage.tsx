@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Plus, X, Users, UserPlus } from 'lucide-react';
+import { Plus, X, Users, UserPlus, Trash2, Printer } from 'lucide-react';
 import { Participant, Team } from '@/types/hackathon';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useSharedState } from '@/lib/shared-storage';
 import { toast } from 'sonner';
 
 const MAX_TEAM_SIZE = 4;
 
 const TeamsPage = () => {
-  const [participants, setParticipants] = useLocalStorage<Participant[]>('hackathon-participants', []);
-  const [teams, setTeams] = useLocalStorage<Team[]>('hackathon-teams', []);
+  const { state, updateState } = useSharedState();
+  const participants = state.participants || [];
+  const teams = state.teams || [];
+  
   const [newTeamName, setNewTeamName] = useState('');
   const [selectedParticipant, setSelectedParticipant] = useState<Record<string, string>>({});
 
@@ -23,7 +25,11 @@ const TeamsPage = () => {
       toast.error('Team name already exists');
       return;
     }
-    setTeams(prev => [...prev, { id: crypto.randomUUID(), name, members: [] }]);
+    updateState(prev => ({
+      ...prev,
+      teams: [...prev.teams, { id: crypto.randomUUID(), name, members: [] }]
+    }), `created team: ${name}`);
+    
     setNewTeamName('');
     toast.success(`Team "${name}" created!`);
   };
@@ -39,16 +45,36 @@ const TeamsPage = () => {
       return;
     }
 
-    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, members: [...t.members, pId] } : t));
-    setParticipants(prev => prev.map(p => p.id === pId ? { ...p, teamName: team.name } : p));
+    updateState(prev => {
+      const nextTeams = prev.teams.map(t => t.id === teamId ? { ...t, members: [...t.members, pId] } : t);
+      const nextParticipants = prev.participants.map(p => p.id === pId ? { ...p, teamName: team.name } : p);
+      return { ...prev, teams: nextTeams, participants: nextParticipants };
+    }, `added ${getParticipant(pId)?.name} to team ${team.name}`);
+
     setSelectedParticipant(prev => ({ ...prev, [teamId]: '' }));
     toast.success('Member added to team');
   };
 
   const removeMember = (teamId: string, pId: string) => {
-    setTeams(prev => prev.map(t => t.id === teamId ? { ...t, members: t.members.filter(m => m !== pId) } : t));
-    setParticipants(prev => prev.map(p => p.id === pId ? { ...p, teamName: null } : p));
+    updateState(prev => {
+      const nextTeams = prev.teams.map(t => t.id === teamId ? { ...t, members: t.members.filter(m => m !== pId) } : t);
+      const nextParticipants = prev.participants.map(p => p.id === pId ? { ...p, teamName: null } : p);
+      return { ...prev, teams: nextTeams, participants: nextParticipants };
+    }, `removed member from team`);
+    
     toast.info('Member removed from team');
+  };
+
+  const deleteTeam = (teamId: string, teamName: string) => {
+    if (!window.confirm(`Are you sure you want to delete ${teamName}?`)) return;
+
+    updateState(prev => {
+      const nextTeams = prev.teams.filter(t => t.id !== teamId);
+      const nextParticipants = prev.participants.map(p => p.teamName === teamName ? { ...p, teamName: null } : p);
+      return { ...prev, teams: nextTeams, participants: nextParticipants };
+    }, `deleted team: ${teamName}`);
+    
+    toast.success('Team deleted');
   };
 
   const getParticipant = (id: string) => participants.find(p => p.id === id);
@@ -78,6 +104,12 @@ const TeamsPage = () => {
           >
             Create
           </button>
+          <button 
+            onClick={() => window.print()} 
+            className="flex items-center gap-2 h-10 px-4 rounded-xl bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 transition-all"
+          >
+            <Printer className="w-4 h-4" /> Print
+          </button>
         </div>
       </div>
 
@@ -101,11 +133,20 @@ const TeamsPage = () => {
                     <p className="text-xs text-muted-foreground">{team.members.length}/{MAX_TEAM_SIZE} members</p>
                   </div>
                 </div>
-                <div className="h-2 w-20 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all"
-                    style={{ width: `${(team.members.length / MAX_TEAM_SIZE) * 100}%` }}
-                  />
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-16 md:w-20 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all"
+                      style={{ width: `${(team.members.length / MAX_TEAM_SIZE) * 100}%` }}
+                    />
+                  </div>
+                  <button
+                    onClick={() => deleteTeam(team.id, team.name)}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    title="Delete Team"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 

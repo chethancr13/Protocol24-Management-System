@@ -16,9 +16,9 @@ const ContactSection = () => (
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
-          { icon: Mail, label: 'Email Us', value: 'hello@hackdash.dev' },
+          { icon: Mail, label: 'Email Us', value: 'core@nullpoint.dev' },
           { icon: MapPin, label: 'Location', value: 'Innovation Hub, Pune' },
-          { icon: MessageSquare, label: 'Discord', value: 'discord.gg/hackdash' },
+          { icon: MessageSquare, label: 'Discord', value: 'discord.gg/protocol24' },
         ].map((c, i) => (
           <motion.div
             key={c.label}

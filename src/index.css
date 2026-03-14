@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -211,4 +211,47 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(220 15% 30%);
+}
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  
+  /* Hide sidebar and header and standard controls */
+  aside, header, nav, button, .no-print {
+    display: none !important;
+  }
+  
+  /* Reset margins and paddings for the main container */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .glass-card {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Make sure tables take full width and wrap correctly */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  
+  th, td {
+    border: 1px solid #ccc !important;
+    padding: 8px !important;
+    color: black !important;
+  }
+
+  /* Hide the action columns during print (assuming last column) */
+  th:last-child, td:last-child {
+    display: none !important;
+  }
 }

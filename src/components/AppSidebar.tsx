@@ -1,11 +1,17 @@
-import { NavLink as RouterNavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, UserPlus, Users, Layers, Zap, X } from 'lucide-react';
+import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, UserPlus, Users, Layers, Zap, X, FileCode2, Grid2X2, ClipboardCheck, Wallet, Package, LogOut, ShieldCheck } from 'lucide-react';
 
 const navItems = [
   { title: 'Dashboard', path: '/', icon: LayoutDashboard },
   { title: 'Register', path: '/register', icon: UserPlus },
   { title: 'Participants', path: '/participants', icon: Users },
   { title: 'Teams', path: '/teams', icon: Layers },
+  { title: 'Project Submissions', path: '/project-submissions', icon: FileCode2 },
+  { title: 'Seating Chart', path: '/seating', icon: Grid2X2 },
+  { title: 'Team Check-In', path: '/team-checkin', icon: ClipboardCheck },
+  { title: 'Expenses', path: '/expenses', icon: Wallet },
+  { title: 'Goods & Logistics', path: '/logistics', icon: Package },
+  { title: 'Volunteers', path: '/volunteers', icon: ShieldCheck },
 ];
 
 interface AppSidebarProps {
@@ -30,8 +36,8 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
             <Zap className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-foreground tracking-tight">HackDash</h1>
-            <p className="text-[10px] text-muted-foreground tracking-widest uppercase">Management</p>
+            <h1 className="text-sm font-bold text-foreground tracking-tight">PROTOCOL 24</h1>
+            <p className="text-[10px] text-muted-foreground tracking-widest uppercase">by NullPoint</p>
           </div>
         </div>
         {isMobile && (
@@ -76,10 +82,20 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
 
       {/* Footer */}
       <div className="px-4 py-4 border-t border-border">
-        <div className="glass-card rounded-xl p-3 text-center">
+        <div className="glass-card rounded-xl p-3 text-center mb-4">
           <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Powered by</p>
-          <p className="text-xs font-semibold gradient-text">HackDash v1.0</p>
+          <p className="text-xs font-semibold gradient-text">PROTOCOL 24 Core</p>
         </div>
+        <button
+          onClick={() => {
+            localStorage.removeItem('protocol24-auth');
+            window.location.href = '/login';
+          }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-sm font-semibold hover:bg-destructive/10 transition-all"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout Session
+        </button>
       </div>
     </aside>
   );
