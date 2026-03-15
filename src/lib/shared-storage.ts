@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { supabase } from './supabase';
 
 // Define the shape of our global activity feed
 export interface ActivityLog {
@@ -34,65 +35,131 @@ const DEFAULT_STATE: SharedHackathonState = {
   volunteers: []
 };
 
-// Mocking window.storage since we're in a regular browser/node env, 
-// but wrapping it for the USER'S target environment compatibility.
-const getGlobalStorage = () => {
-    // @ts-ignore
-    return (window.storage as any) || {
-        get: (key: string, shared: boolean) => {
-            const val = localStorage.getItem(key);
-            return val ? JSON.parse(val) : null;
-        },
-        set: (key: string, value: any, shared: boolean) => {
-            localStorage.setItem(key, JSON.stringify(value));
-            return true;
-        }
-    };
-};
+const STATE_ID = 'global_hackathon_state';
 
-export const useSharedState = () => {
-  const [state, setState] = useState<SharedHackathonState>(() => {
-    const saved = getGlobalStorage().get('hackathon_state', true);
-    return saved || DEFAULT_STATE;
-  });
+interface SharedStateContextType {
+  state: SharedHackathonState;
+  updateState: (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => Promise<void>;
+  updatePresence: (module: string) => void;
+  loading: boolean;
+}
 
-  const poll = useCallback(() => {
-    const remote = getGlobalStorage().get('hackathon_state', true);
-    if (remote) {
-        const parsed = remote;
-        // Only update if timestamps or content actually differ to avoid unnecessary re-renders
-        if (JSON.stringify(parsed) !== JSON.stringify(state)) {
-            setState(parsed);
-        }
-    }
+const SharedStateContext = createContext<SharedStateContextType | undefined>(undefined);
+
+export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, setState] = useState<SharedHackathonState>(DEFAULT_STATE);
+  const [loading, setLoading] = useState(true);
+  const isLoadedRef = useRef(false);
+  const stateRef = useRef<SharedHackathonState>(DEFAULT_STATE);
+
+  // Sync ref with state
+  useEffect(() => {
+    stateRef.current = state;
   }, [state]);
 
+  // Initial load from Supabase
   useEffect(() => {
-    const interval = setInterval(poll, 3000);
-    return () => clearInterval(interval);
-  }, [poll]);
+    const fetchInitialState = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('shared_data')
+          .select('data')
+          .eq('id', STATE_ID)
+          .single();
 
-  const updateState = (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => {
-    const currentUser = JSON.parse(localStorage.getItem('protocol24-user') || '{}');
-    
-    setState(prev => {
-      const next = updater(prev);
-      
-      // Inject activity log if provided
-      if (actionDescription && currentUser.name) {
-        const newLog: ActivityLog = {
-          id: Math.random().toString(36).substr(2, 9),
-          userName: currentUser.name,
-          role: currentUser.role,
-          action: actionDescription,
-          timestamp: Date.now()
-        };
-        next.activityFeed = [newLog, ...next.activityFeed].slice(0, 20);
+        if (error) {
+          if (error.code === 'PGRST116') {
+            await supabase.from('shared_data').insert({ id: STATE_ID, data: DEFAULT_STATE });
+          } else {
+            console.error('Error fetching initial state:', error);
+          }
+        } else if (data) {
+          setState(data.data);
+          stateRef.current = data.data;
+        }
+      } catch (err) {
+        console.error('Supabase fetch error:', err);
+      } finally {
+        setLoading(false);
+        isLoadedRef.current = true;
       }
-      
-      getGlobalStorage().set('hackathon_state', next, true);
-      return next;
-    });
+    };
+
+    fetchInitialState();
+
+    const channel = supabase
+      .channel('shared-state-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'shared_data',
+          filter: `id=eq.${STATE_ID}`
+        },
+        (payload) => {
+          if (payload.new && (payload.new as any).data) {
+            const newData = (payload.new as any).data;
+            // Prevent redundant updates if we already have this data
+            if (JSON.stringify(newData) !== JSON.stringify(stateRef.current)) {
+              setState(newData);
+              stateRef.current = newData;
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const updateState = async (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => {
+    // CRITICAL: Don't allow updates until we've loaded the current state from Supabase
+    if (!isLoadedRef.current) {
+        console.warn('Update ignored: State not loaded yet');
+        return;
+    }
+
+    const currentUser = JSON.parse(localStorage.getItem('protocol24-user') || '{}');
+    const nextState = updater(stateRef.current);
+    
+    // Inject activity log
+    if (actionDescription && currentUser.name) {
+      const newLog: ActivityLog = {
+        id: Math.random().toString(36).substr(2, 9),
+        userName: currentUser.name,
+        role: currentUser.role,
+        action: actionDescription,
+        timestamp: Date.now()
+      };
+      nextState.activityFeed = [newLog, ...nextState.activityFeed].slice(0, 20);
+    }
+
+    // Optimistic local update
+    setState(nextState);
+    stateRef.current = nextState;
+
+    // Persist to Supabase
+    try {
+      const { error } = await supabase
+        .from('shared_data')
+        .upsert({ 
+          id: STATE_ID, 
+          data: nextState, 
+          updated_at: new Date().toISOString(),
+          updated_by: currentUser.name || 'system'
+        });
+
+      if (error) {
+        console.error('Error updating Supabase state:', error);
+        toast.error(`Sync error: ${error.message}`);
+      }
+    } catch (err: any) {
+      console.error('Supabase update exception:', err);
+      toast.error(`Connection error: ${err.message}`);
+    }
   };
 
   const updatePresence = (module: string) => {
@@ -112,5 +179,17 @@ export const useSharedState = () => {
     }));
   };
 
-  return { state, updateState, updatePresence };
+  return (
+    <SharedStateContext.Provider value={{ state, updateState, updatePresence, loading }}>
+      {children}
+    </SharedStateContext.Provider>
+  );
+};
+
+export const useSharedState = () => {
+  const context = useContext(SharedStateContext);
+  if (context === undefined) {
+    throw new Error('useSharedState must be used within a SharedStateProvider');
+  }
+  return context;
 };
