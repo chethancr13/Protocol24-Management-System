@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: protocol24-dashboard
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      # You should add your Supabase keys in the Render Dashboard -> Environment section:
+      # VITE_SUPABASE_URL
+      # VITE_SUPABASE_ANON_KEY
