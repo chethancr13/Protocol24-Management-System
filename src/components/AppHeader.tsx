@@ -148,7 +148,7 @@ const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }
               onClick={() => {
                 localStorage.removeItem('protocol24-auth');
                 localStorage.removeItem('protocol24-user');
-                window.location.href = '/login';
+                navigate('/login');
                 toast.success('Signed out safely');
               }}
               className="p-2 rounded-md text-[#64748B] hover:text-[#EF4444] hover:bg-[#FEE2E2]/30 transition-colors"

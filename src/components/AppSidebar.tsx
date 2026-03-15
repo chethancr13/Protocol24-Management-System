@@ -23,6 +23,7 @@ interface AppSidebarProps {
 
 const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <aside
@@ -78,7 +79,7 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
           onClick={() => {
             localStorage.removeItem('protocol24-auth');
             localStorage.removeItem('protocol24-user');
-            window.location.href = '/login';
+            navigate('/login');
           }}
           className="w-full h-10 flex items-center justify-center gap-2 px-4 rounded-md border border-[#E2E8F0] text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC] hover:text-[#EF4444] hover:border-[#FEE2E2] transition-colors"
         >
