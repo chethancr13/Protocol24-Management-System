@@ -72,7 +72,10 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         .eq('project_id', PROJECT_ID)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase Load Error:', error);
+        throw error;
+      }
 
       if (data && data.data && Object.keys(data.data).length > 0) {
         setState(data.data as SharedHackathonState);
@@ -82,18 +85,25 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setSyncStatus('connected');
       } else {
         // 2. If cloud is empty, fallback to local and push to cloud
+        console.log('Cloud state empty, attempting local migration...');
         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved);
           setState(parsed);
           stateRef.current = parsed;
-          await supabase.from('shared_data').upsert({ project_id: PROJECT_ID, data: parsed });
+          const { error: upsertError } = await supabase
+            .from('shared_data')
+            .upsert(
+                { project_id: PROJECT_ID, data: parsed }, 
+                { onConflict: 'project_id' }
+            );
+          if (upsertError) console.error('Initial migration failed:', upsertError);
         } else {
           localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
         }
       }
-    } catch (err) {
-      console.error('Error loading cloud state:', err);
+    } catch (err: any) {
+      console.error('Detailed Load Error:', err);
       // Fallback to local
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
@@ -162,12 +172,18 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
       
       const { error } = await supabase
         .from('shared_data')
-        .upsert({ project_id: PROJECT_ID, data: nextState });
+        .upsert(
+            { project_id: PROJECT_ID, data: nextState }, 
+            { onConflict: 'project_id' }
+        );
 
-      if (error) throw error;
-    } catch (err) {
-      console.error('Save error:', err);
-      toast.error('Sync failure: working locally');
+      if (error) {
+        console.error('Supabase Upsert Error:', error);
+        throw error;
+      }
+    } catch (err: any) {
+      console.error('Save error details:', err);
+      toast.error(`Sync failure: ${err.message || 'working locally'}`);
       setSyncStatus('error');
     }
   };
