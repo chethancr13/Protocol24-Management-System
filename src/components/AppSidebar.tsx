@@ -2,16 +2,16 @@ import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router
 import { LayoutDashboard, UserPlus, Users, Layers, Zap, X, FileCode2, Grid2X2, ClipboardCheck, Wallet, Package, LogOut, ShieldCheck } from 'lucide-react';
 
 const navItems = [
-  { title: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { title: 'Register', path: '/register', icon: UserPlus },
-  { title: 'Participants', path: '/participants', icon: Users },
-  { title: 'Teams', path: '/teams', icon: Layers },
-  { title: 'Project Submissions', path: '/project-submissions', icon: FileCode2 },
-  { title: 'Seating Chart', path: '/seating', icon: Grid2X2 },
-  { title: 'Team Check-In', path: '/team-checkin', icon: ClipboardCheck },
-  { title: 'Expenses', path: '/expenses', icon: Wallet },
-  { title: 'Goods & Logistics', path: '/logistics', icon: Package },
-  { title: 'Volunteers', path: '/volunteers', icon: ShieldCheck },
+  { title: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+  { title: 'Register', path: '/admin/register', icon: UserPlus },
+  { title: 'Participants', path: '/admin/participants', icon: Users },
+  { title: 'Teams', path: '/admin/teams', icon: Layers },
+  { title: 'Project Submissions', path: '/admin/project-submissions', icon: FileCode2 },
+  { title: 'Seating Chart', path: '/admin/seating', icon: Grid2X2 },
+  { title: 'Team Check-In', path: '/admin/team-checkin', icon: ClipboardCheck },
+  { title: 'Expenses', path: '/admin/expenses', icon: Wallet },
+  { title: 'Goods & Logistics', path: '/admin/logistics', icon: Package },
+  { title: 'Volunteers', path: '/admin/volunteers', icon: ShieldCheck },
 ];
 
 interface AppSidebarProps {

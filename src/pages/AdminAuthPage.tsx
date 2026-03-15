@@ -26,7 +26,7 @@ const AdminAuthPage = () => {
           role: account.role
         }));
         toast.success(`Welcome back, ${account.name}`);
-        navigate('/');
+        navigate('/admin');
       } else {
         toast.error('Invalid Credentials. Access Denied.');
       }
@@ -76,7 +76,7 @@ const AdminAuthPage = () => {
           localStorage.setItem('protocol24-passkey-id', credIdStr);
           localStorage.setItem('protocol24-auth', 'authenticated');
           toast.success('Device registered & Access Granted');
-          navigate('/');
+          navigate('/admin');
         }
       } else {
         // Authentication Flow
@@ -105,7 +105,7 @@ const AdminAuthPage = () => {
         if (assertion) {
           localStorage.setItem('protocol24-auth', 'authenticated');
           toast.success('Biometric Verified - Welcome back');
-          navigate('/');
+          navigate('/admin');
         }
       }
     } catch (err: any) {

@@ -17,29 +17,29 @@ import {
 } from '@/components/ui/command';
 
 const pageTitles: Record<string, string> = {
-  '/': 'Dashboard',
-  '/register': 'Register Participant',
-  '/participants': 'Participants',
-  '/teams': 'Team Management',
-  '/project-submissions': 'Project Submissions',
-  '/seating': 'Seating Chart',
-  '/team-checkin': 'Team Check-In',
-  '/expenses': 'Expenses',
-  '/logistics': 'Goods & Logistics',
-  '/volunteers': 'Volunteers',
+  '/admin/dashboard': 'Dashboard',
+  '/admin/register': 'Register Participant',
+  '/admin/participants': 'Participants',
+  '/admin/teams': 'Team Management',
+  '/admin/project-submissions': 'Project Submissions',
+  '/admin/seating': 'Seating Chart',
+  '/admin/team-checkin': 'Team Check-In',
+  '/admin/expenses': 'Expenses',
+  '/admin/logistics': 'Goods & Logistics',
+  '/admin/volunteers': 'Volunteers',
 };
 
 const pages = [
-  { name: 'Dashboard', path: '/' },
-  { name: 'Register Participant', path: '/register' },
-  { name: 'Participants', path: '/participants' },
-  { name: 'Team Management', path: '/teams' },
-  { name: 'Project Submissions', path: '/project-submissions' },
-  { name: 'Seating Chart', path: '/seating' },
-  { name: 'Team Check-In', path: '/team-checkin' },
-  { name: 'Expenses', path: '/expenses' },
-  { name: 'Goods & Logistics', path: '/logistics' },
-  { name: 'Volunteers', path: '/volunteers' },
+  { name: 'Dashboard', path: '/admin/dashboard' },
+  { name: 'Register Participant', path: '/admin/register' },
+  { name: 'Participants', path: '/admin/participants' },
+  { name: 'Team Management', path: '/admin/teams' },
+  { name: 'Project Submissions', path: '/admin/project-submissions' },
+  { name: 'Seating Chart', path: '/admin/seating' },
+  { name: 'Team Check-In', path: '/admin/team-checkin' },
+  { name: 'Expenses', path: '/admin/expenses' },
+  { name: 'Goods & Logistics', path: '/admin/logistics' },
+  { name: 'Volunteers', path: '/admin/volunteers' },
 ];
 
 interface AppHeaderProps {

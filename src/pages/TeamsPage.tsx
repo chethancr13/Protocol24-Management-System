@@ -15,7 +15,7 @@ const TeamsPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState<Record<string, string>>({});
 
   const availableParticipants = participants.filter(
-    p => p.checkInStatus === 'Checked-In' && !p.teamName
+    p => !p.teamName
   );
 
   const createTeam = () => {
