@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, Menu, LogOut, Activity } from 'lucide-react';
 import { toast } from 'sonner';
-import { Participant } from '@/types/hackathon';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useSharedState } from '@/lib/shared-storage';
-import { RefreshCw, Wifi, WifiOff, Loader2 } from 'lucide-react';
 import { TEAM_ACCOUNTS } from '@/config/team';
 import {
   CommandDialog,
@@ -111,31 +108,6 @@ const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }
               <Search className="w-5 h-5" />
             </button>
           )}
-
-          <div className="flex items-center gap-1.5 no-print">
-            <button
-              onClick={() => refresh()}
-              disabled={syncStatus === 'syncing'}
-              className={`p-2 rounded-xl border border-border hover:bg-muted/50 transition-all ${syncStatus === 'syncing' ? 'animate-pulse' : ''}`}
-              title="Force Sync"
-            >
-              {syncStatus === 'syncing' ? (
-                <Loader2 className="w-4 h-4 animate-spin text-primary" />
-              ) : (
-                <RefreshCw className="w-4 h-4 text-muted-foreground" />
-              )}
-            </button>
-            <div 
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-border text-[10px] font-bold uppercase tracking-wider ${
-                syncStatus === 'connected' ? 'bg-success/10 text-success border-success/20' : 
-                syncStatus === 'error' ? 'bg-destructive/10 text-destructive border-destructive/20' : 
-                'bg-muted/50 text-muted-foreground'
-              }`}
-            >
-              {syncStatus === 'connected' ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
-              {!isMobile && (syncStatus === 'connected' ? 'Live' : syncStatus === 'error' ? 'Offline' : 'Syncing')}
-            </div>
-          </div>
           <div className="flex items-center gap-3">
             {/* Presence Indicators */}
             {activeUsers.length > 0 && (
