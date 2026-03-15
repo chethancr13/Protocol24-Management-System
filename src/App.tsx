@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SharedStateProvider } from "./lib/shared-storage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminAuthPage from "./pages/AdminAuthPage";
@@ -22,14 +22,14 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Redirection logic simplified
+// Using HashRouter to fix Vercel 404 issues permanently
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <SharedStateProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <HashRouter>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<AdminAuthPage />} />
@@ -54,7 +54,7 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </TooltipProvider>
     </SharedStateProvider>
   </QueryClientProvider>
