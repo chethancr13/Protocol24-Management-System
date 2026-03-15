@@ -89,6 +89,9 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
         <button
           onClick={() => {
             localStorage.removeItem('protocol24-auth');
+            localStorage.removeItem('protocol24-user');
+            localStorage.removeItem('hackathon_teams');
+            localStorage.removeItem('hackathon_seats');
             window.location.href = '/login';
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-sm font-semibold hover:bg-destructive/10 transition-all"

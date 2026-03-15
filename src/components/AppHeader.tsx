@@ -158,6 +158,8 @@ const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }
               onClick={() => {
                 localStorage.removeItem('protocol24-auth');
                 localStorage.removeItem('protocol24-user');
+                localStorage.removeItem('hackathon_teams');
+                localStorage.removeItem('hackathon_seats');
                 navigate('/login');
                 toast.success('Session Terminated');
               }}

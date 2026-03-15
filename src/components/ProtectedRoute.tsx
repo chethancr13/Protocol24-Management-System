@@ -17,9 +17,23 @@ const ProtectedRoute = () => {
   }
 
   const authState = localStorage.getItem('protocol24-auth');
-  const userState = localStorage.getItem('protocol24-user');
+  const userJson = localStorage.getItem('protocol24-user');
   
-  const isAuthenticated = authState === 'authenticated' && !!userState;
+  if (!authState || !userJson) {
+     return <Navigate to="/login" replace />;
+  }
+
+  const user = JSON.parse(userJson);
+  const loginTime = user.loginTime || 0;
+  const hoursElapsed = (Date.now() - loginTime) / (1000 * 60 * 60);
+
+  if (hoursElapsed > 24) {
+    localStorage.removeItem('protocol24-auth');
+    localStorage.removeItem('protocol24-user');
+    return <Navigate to="/login" replace />;
+  }
+  
+  const isAuthenticated = authState === 'authenticated';
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

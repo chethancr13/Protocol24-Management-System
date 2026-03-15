@@ -23,7 +23,8 @@ const AdminAuthPage = () => {
         localStorage.setItem('protocol24-user', JSON.stringify({
           username: username.toLowerCase(),
           name: account.name,
-          role: account.role
+          role: account.role,
+          loginTime: Date.now()
         }));
         toast.success(`Welcome back, ${account.name}`);
         navigate('/admin');
@@ -104,6 +105,18 @@ const AdminAuthPage = () => {
 
         if (assertion) {
           localStorage.setItem('protocol24-auth', 'authenticated');
+          const savedUser = localStorage.getItem('protocol24-user');
+          if (savedUser) {
+            const user = JSON.parse(savedUser);
+            localStorage.setItem('protocol24-user', JSON.stringify({ ...user, loginTime: Date.now() }));
+          } else {
+            localStorage.setItem('protocol24-user', JSON.stringify({ 
+              username: 'core-admin', 
+              name: 'Core Admin', 
+              role: 'Organizer', 
+              loginTime: Date.now() 
+            }));
+          }
           toast.success('Biometric Verified - Welcome back');
           navigate('/admin');
         }
