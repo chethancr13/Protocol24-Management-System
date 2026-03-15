@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SharedStateProvider } from "./lib/shared-storage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminAuthPage from "./pages/AdminAuthPage";
-import LandingPage from "./pages/LandingPage";
 import DashboardLayout from "./components/DashboardLayout";
 import DashboardPage from "./pages/DashboardPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -23,6 +22,7 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Redirection logic simplified
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <SharedStateProvider>
@@ -31,7 +31,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<AdminAuthPage />} />
             
             {/* Protected Admin Routes */}

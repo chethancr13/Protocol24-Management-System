@@ -1,180 +1,120 @@
-import { useState } from 'react';
 import { useSharedState } from '@/lib/shared-storage';
-import { TEAM_ACCOUNTS } from '@/config/team';
-import { Clock, Search, Filter, Calendar, User, Zap, Download } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { History, Search, Filter, Clock, User, Info } from 'lucide-react';
+import { useState } from 'react';
 
 const LogsPage = () => {
   const { state } = useSharedState();
-  const logs = state.activityFeed || [];
+  const activities = [...(state.activityFeed || [])].reverse();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('all');
+  const [actionFilter, setActionFilter] = useState('All');
 
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = 
-      log.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      log.action.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = filterRole === 'all' || log.role === filterRole;
-    return matchesSearch && matchesFilter;
+  const filteredLogs = activities.filter(log => {
+    const matchesSearch = log.action.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          log.userName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesAction = actionFilter === 'All' || log.action.toLowerCase().includes(actionFilter || '');
+    return matchesSearch && matchesAction;
   });
 
-  const groupLogsByDate = (logs: any[]) => {
-    const groups: Record<string, any[]> = {};
-    logs.forEach(log => {
-      const date = new Date(log.timestamp).toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-      if (!groups[date]) groups[date] = [];
-      groups[date].push(log);
-    });
-    return groups;
+  const getActionColor = (action: string) => {
+    const lowerAction = action.toLowerCase();
+    if (lowerAction.includes('created') || lowerAction.includes('added') || lowerAction.includes('register')) return 'text-emerald-600 bg-emerald-50 border-emerald-100';
+    if (lowerAction.includes('deleted') || lowerAction.includes('removed')) return 'text-rose-600 bg-rose-50 border-rose-100';
+    if (lowerAction.includes('updated') || lowerAction.includes('modified') || lowerAction.includes('set')) return 'text-[#106292] bg-[#106292]/5 border-[#106292]/10';
+    return 'text-slate-600 bg-slate-50 border-slate-100';
   };
 
-  const groupedLogs = groupLogsByDate(filteredLogs);
-
-  const exportLogs = () => {
-    const csv = [
-      ['Timestamp', 'User', 'Role', 'Action'],
-      ...filteredLogs.map(log => [
-        new Date(log.timestamp).toISOString(),
-        log.userName,
-        log.role,
-        log.action
-      ])
-    ].map(e => e.join(",")).join("\n");
-
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `audit-logs-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-  };
+  const inputClass = "h-10 px-4 rounded-md bg-white border border-[#CBD5E1] text-[13px] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292]/20 transition-all";
 
   return (
     <div className="space-y-6 animate-fade-up">
-      {/* Search and Filter */}
-      <div className="glass-card rounded-2xl p-6 border border-border shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-96">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search logs by user or action..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 rounded-xl bg-muted/50 border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-          />
-        </div>
-        
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="relative flex-1 md:w-48">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-muted/50 border border-border text-sm text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all cursor-pointer"
-            >
-              <option value="all">All Roles</option>
-              {Object.keys(TEAM_ACCOUNTS).map(role => (
-                <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
-              ))}
-            </select>
+      <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
+        {/* Header & Controls */}
+        <div className="p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white no-print">
+          <div>
+            <h2 className="text-sm font-bold text-[#1B2533] uppercase tracking-[0.1em] flex items-center gap-2">
+              <History className="w-4 h-4 text-[#106292]" />
+               Audit Logs & Activity
+            </h2>
+            <p className="text-[11px] font-medium text-[#64748B] mt-1">Real-time record of all administrative actions</p>
           </div>
           
-          <button
-            onClick={exportLogs}
-            className="h-10 px-4 rounded-xl border border-border bg-background hover:bg-muted text-foreground text-sm font-medium flex items-center gap-2 transition-all active:scale-[0.98]"
-          >
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Export CSV</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Logs Table */}
-      <div className="space-y-8">
-        {Object.entries(groupedLogs).length === 0 ? (
-          <div className="glass-card rounded-2xl p-12 text-center border border-border/50">
-            <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4 grayscale opacity-50">
-              <Clock className="w-8 h-8 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto text-sm font-semibold">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+              <input
+                type="text"
+                placeholder="Search logs..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className={`${inputClass} pl-9 w-full sm:w-56`}
+              />
             </div>
-            <h3 className="text-lg font-semibold text-foreground">No logs found</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto mt-2">
-              We couldn't find any activities matching your search or filters. Try adjusting your criteria.
-            </p>
+            
+            <select
+              value={actionFilter}
+              onChange={e => setActionFilter(e.target.value)}
+              className={`${inputClass} w-full sm:w-40 appearance-none font-medium`}
+            >
+              <option value="All">All Actions</option>
+              <option value="created">Created</option>
+              <option value="updated">Updated</option>
+              <option value="deleted">Deleted</option>
+              <option value="registered">Registered</option>
+            </select>
           </div>
-        ) : (
-          Object.entries(groupedLogs).map(([date, items]) => (
-            <div key={date} className="space-y-4">
-              <div className="flex items-center gap-2 px-2">
-                <Calendar className="w-3.5 h-3.5 text-primary" />
-                <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{date}</h3>
-              </div>
-              
-              <div className="glass-card rounded-2xl overflow-hidden border border-border shadow-sm">
-                <div className="divide-y divide-border/50">
-                  <AnimatePresence mode="popLayout">
-                    {items.map((log) => {
-                      const account = TEAM_ACCOUNTS[log.role as any] || { color: '#888' };
-                      return (
-                        <motion.div
-                          layout
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          key={log.id}
-                          className="flex items-center gap-4 p-4 hover:bg-muted/30 transition-colors group"
-                        >
-                          <div className="w-10 h-10 rounded-xl flex items-center justify-center ring-1 ring-border/50 bg-background shadow-sm flex-shrink-0">
-                            <span className="text-sm font-bold" style={{ color: account.color }}>
-                              {log.userName.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-sm font-bold text-foreground">{log.userName}</span>
-                              <span 
-                                className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border"
-                                style={{ 
-                                  backgroundColor: account.color + '15',
-                                  borderColor: account.color + '30',
-                                  color: account.color 
-                                }}
-                              >
-                                {log.role}
-                              </span>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-0.5">{log.action}</p>
-                          </div>
-                          
-                          <div className="text-right flex-shrink-0 flex flex-col items-end gap-1">
-                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-muted text-[10px] font-mono text-muted-foreground">
-                              <Clock className="w-3 h-3" />
-                              {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                            </div>
-                            <div className="flex items-center gap-1 text-[9px] text-success font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Zap className="w-2.5 h-2.5" />
-                              Network Verified
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+        </div>
 
-      <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] py-8 border-t border-border/50">
-        <Zap className="w-3 h-3 text-primary animate-pulse" />
-        End of Audit Trail
+        {/* Logs Table */}
+        <div className="overflow-x-auto font-medium">
+          <table className="w-full text-sm text-left">
+            <thead className="text-[11px] font-bold text-[#64748B] bg-[#F8FAFC] uppercase tracking-[0.1em] border-b border-[#E2E8F0]">
+              <tr>
+                <th className="px-6 py-4">Timestamp</th>
+                <th className="px-6 py-4">User</th>
+                <th className="px-6 py-4">Action Summary</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#F1F5F9] bg-white text-xs">
+              {filteredLogs.length > 0 ? (
+                filteredLogs.map((log, idx) => (
+                  <tr key={log.id || idx} className="hover:bg-[#F8FAFC]/80 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                       <div className="flex items-center gap-2 text-[#64748B]">
+                         <Clock className="w-3.5 h-3.5" />
+                         <span>{new Date(log.timestamp).toLocaleString()}</span>
+                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-[#475569]">
+                          {log.userName.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-bold text-[#1B2533]">{log.userName} <span className="text-[10px] font-bold text-[#94A3B8] uppercase ml-1">({log.role})</span></span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <span className={`shrink-0 px-2 py-0.5 rounded-md border text-[10px] font-bold uppercase tracking-tight ${getActionColor(log.action)}`}>
+                          {log.action.split(':')[0]}
+                        </span>
+                        <span className="text-[#475569] leading-relaxed truncate max-w-md">{log.action}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} className="px-6 py-20 text-center text-[#94A3B8]">
+                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <History className="w-8 h-8 opacity-30" />
+                    </div>
+                    <p className="text-sm font-medium">No activity logs found matching your filters</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

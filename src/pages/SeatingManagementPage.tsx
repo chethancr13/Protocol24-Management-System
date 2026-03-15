@@ -251,57 +251,59 @@ const SeatingManagementPage = () => {
     return positions;
   };
 
+  const inputClass = "h-10 px-4 rounded-md bg-white border border-[#CBD5E1] text-[13px] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292]/20 transition-all";
+
   return (
     <div className="space-y-6 animate-fade-up">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Advanced Seating Map</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Group tables by physical locations and lock team assignments to scalable tables.
-          </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 no-print">
+        <div className="space-y-1">
+          <h2 className="text-sm font-bold text-[#1B2533] uppercase tracking-[0.1em]">Seating & Space Management</h2>
+          <p className="text-[11px] font-medium text-[#64748B]">Configure physical zones and assign team workspaces.</p>
         </div>
         
         <div className="flex gap-3 items-center">
           <button 
             onClick={() => window.print()}
-            className="flex items-center gap-2 h-10 px-4 rounded-xl bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 transition-all shadow-lg shadow-accent/20 no-print"
+            className="flex items-center gap-2 h-10 px-4 rounded-md bg-white border border-[#E2E8F0] text-[#475569] text-[13px] font-bold hover:bg-[#F1F5F9] transition-colors shadow-sm"
           >
             <Printer className="w-4 h-4" /> Print Map
           </button>
           <button 
             onClick={exportCSV}
-            className="flex items-center gap-2 h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all shadow-lg shadow-primary/20 no-print"
+            className="flex items-center gap-2 h-10 px-4 rounded-md bg-[#106292] text-white text-[13px] font-bold hover:bg-[#0D547D] transition-colors shadow-sm"
           >
-            <Download className="w-4 h-4" /> Export CSV
+            <Download className="w-4 h-4" /> Export Ledger
           </button>
         </div>
       </div>
 
       {/* Locations Tab List */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-border no-print">
+      <div className="flex items-center gap-2 overflow-x-auto pb-0.5 border-b border-[#E2E8F0] no-print">
         {locations.map(loc => (
           <button
             key={loc.id}
             onClick={() => { setActiveLocationId(loc.id); setSelectedTableId(null); }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-t-xl text-sm font-bold transition-all border-b-2 ${
-              activeLocationId === loc.id ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-t-md text-[13px] font-bold transition-all border-b-2 ${
+              activeLocationId === loc.id 
+                ? 'border-[#106292] text-[#106292] bg-[#106292]/5' 
+                : 'border-transparent text-[#64748B] hover:text-[#1B2533] hover:bg-[#F8FAFC]'
             }`}
           >
-            <MapPin className="w-4 h-4" /> {loc.name}
+            <MapPin className="w-3.5 h-3.5" /> {loc.name}
             {editable && (
-              <div onClick={(e) => { e.stopPropagation(); deleteLocation(loc.id); }} className="ml-1 p-1 hover:bg-destructive/20 hover:text-destructive rounded-md transition-colors">
+              <div onClick={(e) => { e.stopPropagation(); deleteLocation(loc.id); }} className="ml-1.5 p-1 hover:bg-rose-50 hover:text-rose-600 rounded-md transition-colors">
                 <Trash2 className="w-3 h-3" />
               </div>
             )}
           </button>
         ))}
         {showAddLocation ? (
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-2 px-3 pb-1 border-b-2 border-transparent">
             <input 
               autoFocus
-              className="h-8 px-3 rounded-lg bg-background border border-border text-sm outline-none focus:border-primary"
-              placeholder="e.g. Lab 2"
+              className="h-8 px-3 rounded-md bg-white border border-[#CBD5E1] text-[12px] outline-none focus:border-[#106292]"
+              placeholder="Loc name..."
               value={newLocationName}
               onChange={e => setNewLocationName(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addLocation()}
@@ -309,66 +311,69 @@ const SeatingManagementPage = () => {
             <select 
               value={newLocationLayout} 
               onChange={e => setNewLocationLayout(e.target.value as any)}
-              className="h-8 px-2 rounded-lg bg-background border border-border text-sm outline-none focus:border-primary"
+              className="h-8 px-2 rounded-md bg-white border border-[#CBD5E1] text-[12px] outline-none focus:border-[#106292]"
             >
               <option value="grid">Grid</option>
-              <option value="theater-2-row">Theater (2 Rows)</option>
-              <option value="theater-3-row">Theater (3 Rows)</option>
+              <option value="theater-2-row">Theater (2R)</option>
+              <option value="theater-3-row">Theater (3R)</option>
             </select>
-            <button onClick={addLocation} className="text-sm font-bold text-primary">Save</button>
-            <button onClick={() => setShowAddLocation(false)} className="text-sm text-muted-foreground">Cancel</button>
+            <button onClick={addLocation} className="text-[11px] font-bold text-[#106292] px-2 hover:underline">SAVE</button>
+            <button onClick={() => setShowAddLocation(false)} className="text-[11px] font-bold text-[#94A3B8] hover:text-rose-600">X</button>
           </div>
         ) : editable ? (
-          <button onClick={() => setShowAddLocation(true)} className="flex items-center gap-1 px-4 py-2 rounded-t-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/30">
-            <Plus className="w-4 h-4" /> New Location
+          <button onClick={() => setShowAddLocation(true)} className="flex items-center gap-1.5 px-4 py-2 text-[12px] font-bold text-[#106292] hover:bg-[#106292]/5 rounded-t-md transition-colors">
+            <Plus className="w-3.5 h-3.5" /> NEW ZONE
           </button>
         ) : null}
       </div>
 
       {/* Main Grid View */}
-      <div className="glass-card flex flex-col xl:flex-row gap-6 p-6 rounded-2xl border border-border">
+      <div className="flex flex-col xl:flex-row gap-6">
         
         {/* Left Side: Tables Grid */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-6 space-y-8">
           {activeLocation ? (
             <>
-              <div className="flex flex-wrap justify-between items-center bg-muted/30 p-3 rounded-xl border border-border">
+              <div className="flex flex-wrap justify-between items-center bg-[#F8FAFC] p-4 rounded-lg border border-[#F1F5F9]">
                 <div className="flex items-center gap-4">
-                  <h3 className="font-semibold text-foreground flex items-center gap-2">
-                    <Grid2X2 className="w-5 h-5 text-primary" /> {activeLocation.name} 
+                   <div className="w-8 h-8 rounded-md bg-[#106292]/10 flex items-center justify-center">
+                    <Grid2X2 className="w-4 h-4 text-[#106292]" />
+                  </div>
+                  <h3 className="font-bold text-[#1B2533] uppercase text-xs tracking-wider">
+                    {activeLocation.name} Zone
                   </h3>
-                  <div className="flex gap-2 px-3 py-1 bg-background rounded-lg text-xs font-medium border border-border">
-                    <span className="text-success">{activeLocationStats.empty} Empty</span>
-                    <span className="text-muted-foreground">|</span>
-                    <span className="text-primary">{activeLocationStats.occupied} Occupied</span>
+                  <div className="flex gap-2.5 px-3 py-1 bg-white rounded border border-[#E2E8F0] text-[10px] font-bold uppercase tracking-tight">
+                    <span className="text-emerald-600">{activeLocationStats.empty} VACANT</span>
+                    <span className="text-[#CBD5E1]">|</span>
+                    <span className="text-[#106292]">{activeLocationStats.occupied} ASSIGNED</span>
                   </div>
                 </div>
                 
                 {showAddTable ? (
-                  <div className="flex items-center gap-2 text-xs no-print">
-                    Seats:
-                    <input type="number" min="1" max="6" className="w-16 h-8 px-2 bg-background border border-border rounded outline-none" value={newTableSeats} onChange={e => setNewTableSeats(Number(e.target.value))} />
-                    <button onClick={addTable} className="text-primary font-bold px-2">Add</button>
-                    <button onClick={() => setShowAddTable(false)} className="text-muted-foreground">Cancel</button>
+                  <div className="flex items-center gap-2 text-[11px] no-print">
+                    <span className="font-bold text-[#64748B]">SEATS:</span>
+                    <input type="number" min="1" max="6" className="w-14 h-8 px-2 bg-white border border-[#CBD5E1] rounded outline-none text-center" value={newTableSeats} onChange={e => setNewTableSeats(Number(e.target.value))} />
+                    <button onClick={addTable} className="bg-[#106292] text-white font-bold h-8 px-3 rounded-md shadow-sm">ADD</button>
+                    <button onClick={() => setShowAddTable(false)} className="text-rose-600 font-bold ml-1">CANCEL</button>
                   </div>
                 ) : editable ? (
-                  <button onClick={() => setShowAddTable(true)} className="flex items-center gap-1 text-xs font-bold text-primary hover:text-primary/80 no-print">
-                    <Plus className="w-3 h-3" /> Add Table
+                  <button onClick={() => setShowAddTable(true)} className="flex items-center gap-1.5 text-[11px] font-bold text-[#106292] hover:bg-[#106292]/5 px-3 py-1.5 rounded-md border border-[#106292]/20 transition-colors no-print">
+                    <Plus className="w-3.5 h-3.5" /> ADD TABLE
                   </button>
                 ) : null}
               </div>
 
               {activeLocation.layoutType?.startsWith('theater') && (
-                <div className="mt-8 mb-10 mx-auto w-3/4 max-w-lg h-16 bg-muted border-b-8 border-primary/20 rounded-t-3xl flex items-center justify-center shadow-lg shadow-black/5">
-                  <span className="text-muted-foreground font-black tracking-[0.5em] text-lg uppercase opacity-50">STAGE</span>
+                <div className="mt-8 mb-12 mx-auto w-3/4 max-w-lg h-12 bg-[#F1F5F9] border-b-4 border-[#106292]/30 rounded-t-2xl flex items-center justify-center">
+                  <span className="text-[#94A3B8] font-bold tracking-[0.6em] text-[11px] uppercase opacity-60">STAGE AREA / AUDITORIUM</span>
                 </div>
               )}
 
               {activeLocation.tables.length > 0 ? (
                 <div className={`mt-6 ${
-                  activeLocation.layoutType === 'theater-3-row' ? 'grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-12 place-items-center' :
-                  activeLocation.layoutType === 'theater-2-row' ? 'grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-12 place-items-center' :
-                  'flex flex-wrap gap-8 justify-center sm:justify-start'
+                  activeLocation.layoutType === 'theater-3-row' ? 'grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-16' :
+                  activeLocation.layoutType === 'theater-2-row' ? 'grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-16' :
+                  'flex flex-wrap gap-12'
                 }`}>
                   {activeLocation.tables.map(table => {
                     const status = getTableStatus(activeLocation.id, table.id);
@@ -379,43 +384,40 @@ const SeatingManagementPage = () => {
                     const positions = isTheater ? [] : getSeatPositions(table.seatCount);
 
                     return (
-                      <div key={table.id} className={`flex flex-col items-center gap-4 relative ${isTheater ? 'w-full max-w-[280px]' : ''}`}>
-                        {/* Status Label */}
-                        <div className={`px-4 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${
-                          status === 'Occupied' ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-success/10 border-success/20 text-success'
+                      <div key={table.id} className={`flex flex-col items-center gap-5 relative ${isTheater ? 'w-full' : ''}`}>
+                        <div className={`px-3 py-1 rounded-md border text-[9px] font-bold uppercase tracking-widest ${
+                          status === 'Occupied' ? 'bg-[#106292]/5 border-[#106292]/20 text-[#106292]' : 'bg-emerald-50 border-emerald-100 text-emerald-700'
                         }`}>
-                          {isTheater ? 'Row' : 'Table'} {table.tableNumber}
+                          {isTheater ? 'ROW' : 'TABLE'} {table.tableNumber}
                         </div>
                         
-                        {/* Table/Row Representation */}
                         <button
                           onClick={() => handleTableClick(table)}
-                          className={`relative transition-all flex items-center justify-center ${
+                          className={`group/table relative transition-all flex items-center justify-center ${
                             isTheater 
-                              ? `w-full h-16 rounded-xl border-b-4 flex-row gap-1 px-4 ${
-                                  isSelected ? 'border-primary bg-primary/10 scale-105' : 
-                                  status === 'Occupied' ? 'border-primary/50 bg-primary/5 hover:bg-primary/10' : 
-                                  'border-success/50 bg-card hover:border-success'
+                              ? `w-full h-14 rounded-md border-b-2 flex-row gap-2 px-6 ${
+                                  isSelected ? 'border-[#106292] bg-[#106292]/5 scale-[1.02] shadow-md' : 
+                                  status === 'Occupied' ? 'border-[#CBD5E1] bg-white hover:border-[#106292]' : 
+                                  'border-[#E2E8F0] bg-white hover:border-emerald-500'
                                 }`
-                              : `w-28 h-28 rounded-2xl border-2 flex-col ${
-                                  isSelected ? 'ring-4 ring-primary ring-offset-4 ring-offset-background border-primary bg-primary/5' : 
-                                  status === 'Occupied' ? 'border-primary/50 bg-primary/10 hover:border-primary' : 
-                                  'border-border bg-card hover:border-success/50'
+                              : `w-24 h-24 rounded-lg border flex-col ${
+                                  isSelected ? 'ring-2 ring-[#106292] ring-offset-4 border-[#106292] bg-[#106292]/5' : 
+                                  status === 'Occupied' ? 'border-[#CBD5E1] bg-white hover:border-[#106292]' : 
+                                  'border-[#E2E8F0] bg-white hover:border-emerald-500'
                                 }`
                           }`}
                         >
-                          {/* Inner Table Info */}
                           {isTheater ? (
                             <>
-                              <div className="flex-1 text-left line-clamp-1 text-xs font-bold text-muted-foreground mr-2">
-                                {teamAssigned ? <span className="text-primary">{teamAssigned.name}</span> : 'Open Row'}
+                              <div className="flex-1 text-left line-clamp-1 text-[12px] font-bold text-[#475569]">
+                                {teamAssigned ? <span className="text-[#106292]">{teamAssigned.name}</span> : <span className="text-[#94A3B8] font-medium italic">Unassigned Row</span>}
                               </div>
-                              <div className="flex gap-1 shrink-0">
+                              <div className="flex gap-1.5 shrink-0">
                                 {Array.from({length: table.seatCount}).map((_, idx) => (
                                   <div
                                     key={idx}
-                                    className={`w-3 h-4 rounded-t-md opacity-80 ${
-                                      status === 'Occupied' ? 'bg-primary' : 'bg-success'
+                                    className={`w-3.5 h-4 rounded-t-sm ${
+                                      status === 'Occupied' ? 'bg-[#106292]' : 'bg-emerald-500'
                                     }`}
                                   />
                                 ))}
@@ -423,116 +425,128 @@ const SeatingManagementPage = () => {
                             </>
                           ) : (
                             <>
-                              <span className={`${status === 'Occupied' ? 'text-primary' : 'text-muted-foreground'} text-xs font-bold text-center px-2 line-clamp-2`}>
-                                {teamAssigned ? teamAssigned.name : 'Open Table'}
+                              <span className={`${status === 'Occupied' ? 'text-[#106292]' : 'text-[#94A3B8]'} text-[11px] font-bold text-center px-1.5 line-clamp-2 leading-tight`}>
+                                {teamAssigned ? teamAssigned.name : 'VACANT'}
                               </span>
                               
-                              {/* Seats around the table */}
                               {Array.from({length: table.seatCount}).map((_, idx) => (
                                 <div
                                   key={idx}
-                                  className={`absolute w-5 h-5 rounded-full border-2 transition-all ${
-                                    status === 'Occupied' ? 'bg-primary border-background' : 'bg-success/50 border-background'
+                                  className={`absolute w-4 h-4 rounded-sm border transition-all ${
+                                    status === 'Occupied' ? 'bg-[#106292] border-white' : 'bg-emerald-500/30 border-emerald-500/20'
                                   } ${positions[idx] || ''}`}
                                 />
                               ))}
                             </>
                           )}
+
+                          {editable && (
+                            <div 
+                              onClick={(e) => { e.stopPropagation(); deleteTable(table.id); }}
+                              className="absolute -top-3 -right-3 w-6 h-6 bg-white border border-[#E2E8F0] text-[#CBD5E1] hover:text-rose-600 hover:border-rose-100 rounded-full flex items-center justify-center opacity-0 group-hover/table:opacity-100 transition-all shadow-sm no-print"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </div>
+                          )}
                         </button>
-                        
-                        {/* Delete Button (visible on hover or always in small form) */}
-                        {editable && (
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); deleteTable(table.id); }}
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 hover:opacity-100 transition-opacity drop-shadow-md no-print"
-                            style={{ opacity: isSelected ? 1 : undefined }}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
                       </div>
                     );
                   })}
                 </div>
               ) : (
-                <div className="py-20 flex flex-col items-center justify-center text-muted-foreground border-2 border-dashed border-border rounded-xl">
+                <div className="py-24 flex flex-col items-center justify-center text-[#94A3B8] border-2 border-dashed border-[#F1F5F9] rounded-lg bg-[#F8FAFC]">
                   <Grid2X2 className="w-10 h-10 mb-4 opacity-20" />
-                  <p>No tables configured for {activeLocation.name}.</p>
-                  <button onClick={() => setShowAddTable(true)} className="mt-2 text-primary text-sm font-semibold hover:underline">Create the first table</button>
+                  <p className="text-sm font-bold uppercase tracking-tight">Zone Workspace Blank</p>
+                  <button onClick={() => setShowAddTable(true)} className="mt-3 text-[#106292] text-[11px] font-bold hover:underline">INITIALIZE TABLES</button>
                 </div>
               )}
             </>
           ) : (
-            <div className="py-20 flex flex-col items-center justify-center text-muted-foreground border-2 border-dashed border-border rounded-xl">
+            <div className="py-24 flex flex-col items-center justify-center text-[#94A3B8] border-2 border-dashed border-[#F1F5F9] rounded-lg bg-[#F8FAFC]">
               <MapPin className="w-10 h-10 mb-4 opacity-20" />
-              <p>Please select or create a physical location group first.</p>
+              <p className="text-sm font-bold uppercase tracking-tight">Zone Registry Offline</p>
+              <p className="text-[11px] mt-1 font-medium">Please select a designated area to view mapping.</p>
             </div>
           )}
         </div>
 
         {/* Right Side: Assignment Panel */}
-        <div className="w-full xl:w-80 shrink-0 h-fit sticky top-6 no-print">
+        <div className="w-full xl:w-80 shrink-0 no-print">
           {selectedTable ? (
-            <div className="bg-card rounded-xl border border-border p-5 animate-fade-in shadow-xl shadow-black/5">
-              <h3 className="font-bold text-lg text-foreground mb-4">Table Assignment</h3>
+            <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-6 animate-fade-in sticky top-6">
+               <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-md bg-[#106292]/10 flex items-center justify-center">
+                  <Users className="w-4 h-4 text-[#106292]" />
+                </div>
+                <h3 className="font-bold text-[#1B2533] text-sm uppercase tracking-wider">Workspace Ledger</h3>
+              </div>
               
-              <div className="space-y-4">
-                <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                  <p className="text-xs text-muted-foreground mb-1">Target</p>
-                  <div className="font-semibold text-lg">{activeLocation?.name} - Table {selectedTable.tableNumber}</div>
-                  <div className="mt-2 text-xs flex items-center justify-between">
-                    <span>Status: <strong className={getTableStatus(activeLocation!.id, selectedTable.id) === 'Occupied' ? 'text-primary' : 'text-success'}>
-                      {getTableStatus(activeLocation!.id, selectedTable.id)}
-                    </strong></span>
-                    <span className="text-muted-foreground">{selectedTable.seatCount} Seats</span>
+              <div className="space-y-6">
+                <div className="p-4 bg-slate-50 rounded-md border border-[#F1F5F9]">
+                  <div className="text-[10px] font-bold text-[#64748B] uppercase tracking-widest mb-2">Location Identity</div>
+                  <div className="font-bold text-[#1B2533]">{activeLocation?.name} — {activeLocation?.layoutType?.startsWith('theater') ? 'Row' : 'Table'} {selectedTable.tableNumber}</div>
+                  <div className="mt-3 flex items-center justify-between text-[11px] font-bold">
+                    <span className={getTableStatus(activeLocation!.id, selectedTable.id) === 'Occupied' ? 'text-[#106292]' : 'text-emerald-600'}>
+                      {getTableStatus(activeLocation!.id, selectedTable.id).toUpperCase()}
+                    </span>
+                    <span className="text-[#94A3B8]">{selectedTable.seatCount} CAPACITY</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Lock to Team</label>
+                  <label className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider ml-1">Assigned Collective</label>
                   <select
                     value={selectedTeamId}
                     onChange={e => setSelectedTeamId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg bg-background border border-border text-sm focus:ring-1 focus:ring-primary outline-none"
+                    className={`${inputClass} font-medium`}
                   >
-                    <option value="">-- Unassigned / Select Team --</option>
+                    <option value="">(Vacancy / No Assignment)</option>
                     {teams.map(t => {
                       const isAtThisTable = t.seatAssigned === getTableAssignKey(activeLocation!.id, selectedTable.id);
                       return (
                         <option key={t.id} value={t.id}>
-                          {t.name} ({t.members.length} members) {isAtThisTable ? '[Active]' : t.seatAssigned ? '[Moved]' : ''}
+                          {t.name} [{t.members.length} Members] {isAtThisTable ? '«Current»' : t.seatAssigned ? '«Relocated»' : ''}
                         </option>
                       );
                     })}
                   </select>
                 </div>
 
-                <div className="pt-4 flex gap-2">
+                <div className="pt-2 flex flex-col gap-2">
                   {editable && (
                     <button
                       onClick={assignTable}
                       disabled={!selectedTeamId}
-                      className="flex-1 h-10 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                      className="w-full h-11 bg-[#106292] text-white text-[13px] font-bold rounded-md hover:bg-[#0D547D] disabled:opacity-40 disabled:grayscale transition-all shadow-sm"
                     >
-                      Lock Team
+                      COMMIT ASSIGNMENT
                     </button>
                   )}
                   {editable && getTableStatus(activeLocation!.id, selectedTable.id) === 'Occupied' && (
                     <button
                       onClick={unassignTable}
-                      className="flex-1 h-10 bg-destructive/10 text-destructive text-sm font-medium rounded-lg hover:bg-destructive/20 transition-all border border-destructive/20"
+                      className="w-full h-10 bg-white text-rose-600 text-[12px] font-bold rounded-md hover:bg-rose-50 transition-colors border border-rose-100"
                     >
-                      Clear
+                      VACATE WORKSPACE
                     </button>
                   )}
-                  {!editable && <p className="text-xs text-muted-foreground text-center w-full">Ask a Logistics Lead to modify seating.</p>}
+                  {!editable && <p className="text-[11px] text-[#94A3B8] font-medium text-center italic">Access restricted to Logistics Personnel.</p>}
+                  <button 
+                    onClick={() => setSelectedTableId(null)}
+                    className="w-full h-10 text-[11px] font-bold text-[#64748B] hover:text-[#1B2533] transition-colors"
+                  >
+                    DISMISS LEDGER
+                  </button>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-muted/30 rounded-xl border border-dashed border-border p-8 flex flex-col items-center justify-center text-center h-[300px]">
-              <Info className="w-10 h-10 text-muted-foreground/50 mb-4" />
-              <p className="text-sm text-muted-foreground font-medium">Select a structural table on the map to modify its team assignment.</p>
+            <div className="bg-white rounded-lg border-2 border-dashed border-[#F1F5F9] p-8 flex flex-col items-center justify-center text-center sticky top-6 h-[400px]">
+              <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-4">
+                <Info className="w-6 h-6 text-[#CBD5E1]" />
+              </div>
+              <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wider">Map Navigation Active</p>
+              <p className="text-[11px] text-[#94A3B8] font-medium mt-1">Select a workspace unit on the left to initiate administrative assignment.</p>
             </div>
           )}
         </div>

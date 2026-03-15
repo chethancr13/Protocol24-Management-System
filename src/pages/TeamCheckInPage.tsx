@@ -85,48 +85,48 @@ const TeamCheckInPage = () => {
     pending: teams.filter(t => t.checkInStatus !== 'Checked-In').length,
   };
 
-  const inputClass = "h-10 px-4 rounded-xl bg-muted/50 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all";
+  const inputClass = "h-10 px-4 rounded-md bg-white border border-[#CBD5E1] text-[13px] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292]/20 transition-all";
 
   return (
     <div className="space-y-6 animate-fade-up">
       {/* Stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
         {[
-          { label: 'Total Teams', value: stats.total, icon: Users, color: 'text-primary', bg: 'bg-primary/10' },
-          { label: 'Checked In', value: stats.checkedIn, icon: ClipboardCheck, color: 'text-success', bg: 'bg-success/10' },
-          { label: 'Pending Arrival', value: stats.pending, icon: Clock, color: 'text-amber-500', bg: 'bg-amber-500/10' }
+          { label: 'Registered Teams', value: stats.total, icon: Users, color: 'text-[#106292]', bg: 'bg-[#106292]/10' },
+          { label: 'Validated Entry', value: stats.checkedIn, icon: ClipboardCheck, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Awaiting Check-In', value: stats.pending, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50' }
         ].map(stat => (
-          <div key={stat.label} className="glass-card rounded-2xl p-4 flex items-center justify-between">
+          <div key={stat.label} className="bg-white rounded-lg p-5 border border-[#E2E8F0] shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground font-medium mb-1">{stat.label}</p>
-              <h4 className="text-2xl font-bold text-foreground">{stat.value}</h4>
+              <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider mb-1">{stat.label}</p>
+              <h4 className="text-2xl font-bold text-[#1B2533]">{stat.value}</h4>
             </div>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg}`}>
+            <div className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}>
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="glass-card rounded-2xl border border-border overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
         {/* Header & Filters */}
-        <div className="p-4 border-b border-border flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-card/50">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <h2 className="text-lg font-bold text-foreground">Team Check-In</h2>
+        <div className="p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white no-print">
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <h2 className="text-sm font-bold text-[#1B2533] uppercase tracking-[0.1em]">Team Verification Desk</h2>
             <button 
               onClick={exportCSV} 
-              className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors flex items-center gap-1.5 text-xs font-semibold ml-auto sm:ml-0"
+              className="px-3 py-1.5 rounded-md bg-white border border-[#E2E8F0] text-[#475569] hover:bg-[#F1F5F9] transition-colors flex items-center gap-2 text-[11px] font-bold shadow-sm"
             >
-              <Download className="w-3.5 h-3.5" /> Export DB
+              <Download className="w-3.5 h-3.5" /> EXPORT REPORT
             </button>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
               <input
                 type="text"
-                placeholder="Search teams..."
+                placeholder="Search team name or ID..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className={`${inputClass} pl-9 w-full sm:w-64`}
@@ -136,9 +136,9 @@ const TeamCheckInPage = () => {
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value as CheckInStatus | 'All')}
-              className={`${inputClass} w-full sm:w-48 appearance-none`}
+              className={`${inputClass} w-full sm:w-48 appearance-none font-medium`}
             >
-              <option value="All">All Statuses</option>
+              <option value="All">All Entry States</option>
               <option value="Not Checked-In">Not Checked-In</option>
               <option value="Checked-In">Checked-In</option>
             </select>
@@ -148,69 +148,74 @@ const TeamCheckInPage = () => {
         {/* List of Teams */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground bg-muted/30 uppercase border-b border-border">
+            <thead className="text-[11px] font-bold text-[#64748B] bg-[#F8FAFC] uppercase tracking-[0.1em] border-b border-[#E2E8F0]">
               <tr>
-                <th className="px-6 py-4 font-medium">Team Info</th>
-                <th className="px-6 py-4 font-medium">Members</th>
-                <th className="px-6 py-4 font-medium">Seat Assigned</th>
-                <th className="px-6 py-4 font-medium">Check-In Time</th>
-                <th className="px-6 py-4 font-medium text-right">Actions</th>
+                <th className="px-6 py-4 font-bold">Team Credentials</th>
+                <th className="px-6 py-4 font-bold">Quotas</th>
+                <th className="px-6 py-4 font-bold">Workspace</th>
+                <th className="px-6 py-4 font-bold">Security Stamp</th>
+                <th className="px-6 py-4 text-right font-bold">Admission</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-[#F1F5F9] bg-white text-[13px]">
               {filteredTeams.length > 0 ? (
                 filteredTeams.map((team) => (
-                  <tr key={team.id} className="hover:bg-muted/20 transition-colors">
+                  <tr key={team.id} className="hover:bg-[#F8FAFC]/80 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-foreground">{team.name}</div>
-                      <div className="text-[10px] text-muted-foreground uppercase opacity-70">ID: {team.id.substring(0,8)}</div>
+                      <div className="font-bold text-[#1B2533]">{team.name}</div>
+                      <div className="text-[10px] text-[#94A3B8] font-bold uppercase tracking-widest mt-0.5">ID: {team.id.substring(0,8)}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5">
-                        <Users className="w-4 h-4 text-muted-foreground" />
-                        <span className="font-medium">{team.members.length}/4</span>
+                      <div className="flex items-center gap-2 text-[#475569] font-medium">
+                        <Users className="w-4 h-4 text-[#94A3B8]" />
+                        <span>{team.members.length} / 4 Members</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {team.seatAssigned ? (
-                        <span className="px-2.5 py-1 rounded-md bg-accent/15 text-accent border border-accent/20 text-xs font-semibold">
-                          {team.seatAssigned}
-                        </span>
+                        <div className="flex items-center gap-2 text-[#106292] font-bold italic">
+                           <div className="w-1.5 h-3 bg-[#106292]/20 rounded-full" />
+                           {team.seatAssigned}
+                        </div>
                       ) : (
-                        <span className="text-xs text-muted-foreground italic">None</span>
+                        <span className="text-[11px] text-[#94A3B8] font-medium italic">Unallocated</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="px-6 py-4 text-[#64748B] font-medium">
                       {team.checkInStatus === 'Checked-In' ? (
-                        <span className="flex items-center gap-1.5 text-foreground">
-                          <Clock className="w-3.5 h-3.5 text-success" />
-                          {formatTime(team.checkInTime)}
-                        </span>
-                      ) : '-'}
+                        <div className="flex items-center gap-2 text-emerald-600 font-bold uppercase text-[11px] tracking-tight">
+                          <ClipboardCheck className="w-3.5 h-3.5" />
+                          Authenticated @ {formatTime(team.checkInTime)}
+                        </div>
+                      ) : (
+                        <span className="text-[11px] font-bold text-[#94A3B8] uppercase">Waiting Registration</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       {editable ? (
                         <button
                           onClick={() => toggleCheckIn(team.id)}
-                          className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm ${
+                          className={`min-w-[130px] px-5 py-2 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all shadow-sm ${
                             team.checkInStatus === 'Checked-In'
-                              ? 'bg-muted text-muted-foreground border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20'
-                              : 'bg-success/90 text-success-foreground hover:bg-success shadow-success/20'
+                              ? 'bg-white text-rose-600 border border-rose-100 hover:bg-rose-50'
+                              : 'bg-[#106292] text-white hover:bg-[#0D547D]'
                           }`}
                         >
-                          {team.checkInStatus === 'Checked-In' ? 'Undo Check-In' : 'Mark Checked-In'}
+                          {team.checkInStatus === 'Checked-In' ? 'REVOKE ENTRY' : 'GRANT ACCESS'}
                         </button>
                       ) : (
-                        <span className="text-[10px] font-bold uppercase text-muted-foreground opacity-50">Auth Req</span>
+                        <span className="text-[10px] font-bold uppercase text-[#94A3B8] bg-slate-50 px-3 py-1.5 rounded-md border border-slate-100">Supervisory Only</span>
                       )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
-                    <ClipboardCheck className="w-8 h-8 mx-auto mb-3 opacity-20" />
-                    <p>No teams found matching your filters</p>
+                  <td colSpan={5} className="px-6 py-24 text-center text-[#94A3B8]">
+                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <ClipboardCheck className="w-8 h-8 opacity-30" />
+                    </div>
+                    <p className="text-sm font-medium">No team records found under current parameters</p>
                   </td>
                 </tr>
               )}

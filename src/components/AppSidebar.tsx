@@ -26,30 +26,29 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen w-64 flex flex-col bg-sidebar border-r border-border z-50 transition-transform duration-300 ${
+      className={`fixed left-0 top-0 h-screen w-[260px] flex flex-col bg-[#F8FAFC] border-r border-[#E2E8F0] z-50 transition-transform duration-300 ${
         open ? 'translate-x-0' : '-translate-x-full'
       }`}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between px-6 py-6 border-b border-border">
+      <div className="flex items-center justify-between px-6 py-[22px] border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-primary" />
+          <div className="w-8 h-8 rounded-md bg-[#106292] flex items-center justify-center">
+            <ShieldCheck className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-foreground tracking-tight">PROTOCOL 24</h1>
-            <p className="text-[10px] text-muted-foreground tracking-widest uppercase">by NullPoint</p>
+            <h1 className="text-sm font-bold text-[#1B2533] tracking-tight">PROTOCOL 24</h1>
           </div>
         </div>
         {isMobile && (
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-muted/50 text-muted-foreground">
+          <button onClick={onClose} className="p-1 rounded-md hover:bg-[#F1F5F9] text-[#64748B]">
             <X className="w-5 h-5" />
           </button>
         )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-3 py-6 space-y-[2px] overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -57,24 +56,16 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
               key={item.path}
               to={item.path}
               onClick={() => isMobile && onClose()}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-colors group ${
                 isActive
-                  ? 'bg-primary/15 text-primary shadow-lg shadow-primary/5'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  ? 'bg-white text-[#106292] shadow-sm ring-1 ring-[#106292]/10'
+                  : 'text-[#475569] hover:text-[#1B2533] hover:bg-[#F1F5F9]'
               }`}
             >
-              <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary/20'
-                    : 'bg-muted group-hover:bg-muted/80'
-                }`}
-              >
-                <item.icon className="w-4 h-4" />
-              </div>
+              <item.icon className={`w-[18px] h-[18px] ${isActive ? 'text-[#106292]' : 'text-[#94A3B8] group-hover:text-[#64748B]'}`} />
               <span>{item.title}</span>
               {isActive && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary animate-glow-pulse" />
+                <div className="ml-auto w-1 h-3 rounded-full bg-[#106292]" />
               )}
             </RouterNavLink>
           );
@@ -82,23 +73,17 @@ const AppSidebar = ({ open, onClose, isMobile }: AppSidebarProps) => {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-border">
-        <div className="glass-card rounded-xl p-3 text-center mb-4">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Powered by</p>
-          <p className="text-xs font-semibold gradient-text">PROTOCOL 24 Core</p>
-        </div>
+      <div className="px-5 py-6 border-t border-[#E2E8F0] bg-white">
         <button
           onClick={() => {
             localStorage.removeItem('protocol24-auth');
             localStorage.removeItem('protocol24-user');
-            localStorage.removeItem('hackathon_teams');
-            localStorage.removeItem('hackathon_seats');
             window.location.href = '/login';
           }}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-destructive/20 bg-destructive/5 text-destructive text-sm font-semibold hover:bg-destructive/10 transition-all"
+          className="w-full h-10 flex items-center justify-center gap-2 px-4 rounded-md border border-[#E2E8F0] text-[#64748B] text-xs font-semibold hover:bg-[#F8FAFC] hover:text-[#EF4444] hover:border-[#FEE2E2] transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          Logout Session
+          Sign Out
         </button>
       </div>
     </aside>

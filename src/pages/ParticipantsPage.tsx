@@ -125,135 +125,150 @@ const ParticipantsPage = () => {
   };
 
   const inputClass =
-    'h-9 px-3 rounded-xl bg-muted/50 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all';
+    'h-9 px-3 rounded-md bg-white border border-[#CBD5E1] text-[13px] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292]/20 transition-all';
 
   return (
     <div className="space-y-6 animate-fade-up">
       {/* Controls */}
-      <div className="glass-card rounded-2xl p-4 flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+      <div className="bg-white rounded-lg p-4 border border-[#E2E8F0] shadow-sm flex flex-wrap items-center gap-4">
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search participants by name or email..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className={`${inputClass} pl-9 w-full`}
           />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <select value={trackFilter} onChange={e => setTrackFilter(e.target.value)} className={inputClass}>
+          <Filter className="w-4 h-4 text-[#64748B]" />
+          <select value={trackFilter} onChange={e => setTrackFilter(e.target.value)} className={`${inputClass} font-medium`}>
             <option value="All">All Tracks</option>
             {tracks.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
-        <button onClick={() => setSortAsc(!sortAsc)} className={`${inputClass} px-4 cursor-pointer hover:bg-muted/80`}>
+        <button onClick={() => setSortAsc(!sortAsc)} className={`${inputClass} px-4 font-semibold hover:bg-[#F8FAFC]`}>
           Sort {sortAsc ? 'A→Z' : 'Z→A'}
         </button>
         <button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 h-9 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 ml-auto"
+          className="flex items-center gap-2 h-9 px-4 rounded-md bg-[#106292] text-white text-[13px] font-bold hover:bg-[#0D547D] ml-auto transition-colors shadow-sm"
         >
           <Plus className="w-4 h-4" /> Add Participant
         </button>
         <button 
           onClick={() => window.print()} 
-          className="flex items-center gap-2 h-9 px-4 rounded-xl bg-accent text-accent-foreground text-sm font-semibold hover:opacity-90 transition-all"
+          className="flex items-center gap-2 h-9 px-4 rounded-md bg-white border border-[#E2E8F0] text-[#475569] text-[13px] font-bold hover:bg-[#F8FAFC] transition-colors shadow-sm"
         >
-          <Printer className="w-4 h-4" /> Print List
+          <Printer className="w-4 h-4" /> Export
         </button>
       </div>
 
       {showAddForm && (
-        <div className="glass-card rounded-2xl p-6 gradient-border animate-fade-in">
-          <h3 className="text-sm font-semibold text-foreground mb-4">Add New Participant</h3>
+        <div className="bg-white rounded-lg border border-[#106292]/20 shadow-md p-6 animate-fade-in ring-1 ring-[#106292]/5">
+          <h3 className="text-sm font-bold text-[#1B2533] uppercase tracking-wider mb-5 flex items-center gap-2">
+            <div className="w-2 h-4 bg-[#106292] rounded-full" />
+            New Registration
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <input
-              placeholder="Name"
-              className={inputClass}
-              value={newParticipant.name}
-              onChange={e => setNewParticipant(prev => ({ ...prev, name: e.target.value }))}
-            />
-            <input
-              placeholder="Email"
-              type="email"
-              className={inputClass}
-              value={newParticipant.email}
-              onChange={e => setNewParticipant(prev => ({ ...prev, email: e.target.value }))}
-            />
-            <select
-              className={inputClass}
-              value={newParticipant.track}
-              onChange={e => setNewParticipant(prev => ({ ...prev, track: e.target.value as HackathonTrack }))}
-            >
-              {tracks.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <input
-              placeholder="Skill (e.g., Frontend, Python)"
-              className={inputClass}
-              value={newParticipant.skill}
-              onChange={e => setNewParticipant(prev => ({ ...prev, skill: e.target.value }))}
-            />
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Full Name</label>
+              <input
+                placeholder="Name"
+                className={`${inputClass} w-full`}
+                value={newParticipant.name}
+                onChange={e => setNewParticipant(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Email Address</label>
+              <input
+                placeholder="Email"
+                type="email"
+                className={`${inputClass} w-full`}
+                value={newParticipant.email}
+                onChange={e => setNewParticipant(prev => ({ ...prev, email: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Track Selection</label>
+              <select
+                className={`${inputClass} w-full font-medium`}
+                value={newParticipant.track}
+                onChange={e => setNewParticipant(prev => ({ ...prev, track: e.target.value as HackathonTrack }))}
+              >
+                {tracks.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Primary Skill</label>
+              <input
+                placeholder="e.g. React, Python"
+                className={`${inputClass} w-full`}
+                value={newParticipant.skill}
+                onChange={e => setNewParticipant(prev => ({ ...prev, skill: e.target.value }))}
+              />
+            </div>
           </div>
-          <div className="mt-4 flex justify-end gap-2">
-            <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground">Cancel</button>
-            <button onClick={handleAddParticipant} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90">Add</button>
+          <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-[#F1F5F9]">
+            <button onClick={() => setShowAddForm(false)} className="px-5 py-2 text-[13px] font-bold text-[#64748B] hover:text-[#1B2533]">Cancel</button>
+            <button onClick={handleAddParticipant} className="px-6 py-2 rounded-md bg-[#106292] text-white text-[13px] font-bold hover:bg-[#0D547D] shadow-sm">Complete Registration</button>
           </div>
         </div>
       )}
 
       {/* Table */}
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border">
+              <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                 {['Name', 'Email', 'Track', 'Skill', 'Status', 'Team', 'Action'].map(h => (
-                  <th key={h} className="text-left px-5 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
+                  <th key={h} className="text-left px-5 py-3.5 text-[11px] font-bold text-[#64748B] uppercase tracking-[0.1em]">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[#F1F5F9]">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-sm text-muted-foreground">
-                    No participants found
+                  <td colSpan={7} className="text-center py-16 text-sm text-[#94A3B8]">
+                    No participants found matching your criteria
                   </td>
                 </tr>
               ) : (
                 filtered.map(p => (
-                  <tr key={p.id} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
+                  <tr key={p.id} className="hover:bg-[#F8FAFC]/80 transition-colors group">
                     <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-primary/15 flex items-center justify-center text-[10px] font-bold text-primary">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-md bg-[#106292]/10 flex items-center justify-center text-[10px] font-bold text-[#106292]">
                           {p.name.charAt(0)}
                         </div>
-                        <span className="text-sm font-medium text-foreground">{p.name}</span>
+                        <span className="text-[13px] font-semibold text-[#1B2533]">{p.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-sm text-muted-foreground">{p.email}</td>
+                    <td className="px-5 py-3 text-[13px] text-[#475569]">{p.email}</td>
                     <td className="px-5 py-3">
-                      <span className="text-xs font-medium px-2 py-1 rounded-lg bg-primary/10 text-primary">{p.track}</span>
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-[#475569] border border-[#E2E8F0]">{p.track}</span>
                     </td>
-                    <td className="px-5 py-3 text-sm text-muted-foreground">{p.skill}</td>
+                    <td className="px-5 py-3 text-[13px] text-[#475569] font-medium">{p.skill}</td>
                     <td className="px-5 py-3"><StatusBadge status={p.checkInStatus} /></td>
-                    <td className="px-5 py-3 text-sm text-muted-foreground">{p.teamName || '—'}</td>
+                    <td className="px-5 py-3 text-[13px] text-[#64748B] font-medium italic">{p.teamName || 'Unassigned'}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleCheckIn(p.id)}
-                          className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-all active:scale-95 ${
+                          className={`text-[12px] font-bold px-3 py-1.5 rounded-md transition-all active:scale-95 ${
                             p.checkInStatus === 'Checked-In'
-                              ? 'bg-destructive/15 text-destructive hover:bg-destructive/25'
-                              : 'bg-success/15 text-success hover:bg-success/25'
+                              ? 'bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100'
+                              : 'bg-emerald-50 text-emerald-600 border border-emerald-100 hover:bg-emerald-100'
                           }`}
                         >
                           {p.checkInStatus === 'Checked-In' ? 'Check Out' : 'Check In'}
                         </button>
                         <button
                           onClick={() => deleteParticipant(p.id, p.name)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          className="p-1.5 rounded-md text-[#CBD5E1] hover:text-rose-600 hover:bg-rose-50 transition-colors"
                           title="Delete Participant"
                         >
                           <Trash2 className="w-4 h-4" />

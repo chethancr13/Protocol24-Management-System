@@ -23,14 +23,14 @@ const DashboardLayout = () => {
 
       <AppSidebar open={!isMobile || sidebarOpen} onClose={() => setSidebarOpen(false)} isMobile={isMobile} />
 
-      <div className={`${isMobile ? 'ml-0' : `ml-64 ${showActivity ? 'mr-72' : 'mr-0'}`} flex flex-col min-h-screen transition-all duration-300`}>
+      <div className={`${isMobile ? 'ml-0' : `ml-[260px] ${showActivity ? 'mr-[300px]' : 'mr-0'}`} flex flex-col min-h-screen transition-all duration-300`}>
         <AppHeader 
             onMenuToggle={() => setSidebarOpen(prev => !prev)} 
             isMobile={isMobile} 
             onActivityToggle={() => setShowActivity(prev => !prev)}
             activityVisible={showActivity}
         />
-        <main className="flex-1 p-4 md:p-8 overflow-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-auto bg-[#F9FAFB]">
           <Outlet />
         </main>
         <GlobalAlerts />
@@ -38,7 +38,7 @@ const DashboardLayout = () => {
 
       {/* Activity Sidebar (Desktop only) */}
       {!isMobile && showActivity && (
-        <aside className="fixed right-0 top-0 h-screen w-72 bg-sidebar border-l border-border z-40 animate-in slide-in-from-right duration-300">
+        <aside className="fixed right-0 top-0 h-screen w-[300px] bg-white border-l border-[#E2E8F0] z-40 animate-in slide-in-from-right duration-300 shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
           <ActivityFeed onClose={() => setShowActivity(false)} />
         </aside>
       )}

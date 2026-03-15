@@ -136,49 +136,46 @@ const AdminAuthPage = () => {
   const hasPasskey = !!localStorage.getItem('protocol24-passkey-id');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-4">
-      {/* Background styling elements */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background pointer-events-none" />
-      <div className="absolute w-[800px] h-[800px] bg-primary/10 rounded-full blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB] p-4 font-sans">
+      {/* Subtle background texture */}
+      <div className="absolute inset-0 bg-grid opacity-[0.03] pointer-events-none" />
       
-      <div className="w-full max-w-md relative z-10 animate-fade-up">
-        <div className="glass-card rounded-3xl p-8 border border-primary/20 shadow-2xl shadow-primary/10">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center mb-4 ring-1 ring-primary/30">
-              <Shield className="w-8 h-8 text-primary" />
+      <div className="w-full max-w-[440px] relative z-10 animate-fade-up">
+        <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm p-10">
+          <div className="flex flex-col items-center mb-10">
+            <div className="w-12 h-12 rounded-lg bg-[#106292] flex items-center justify-center mb-6 shadow-sm">
+              <Shield className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground text-center tracking-tight">PROTOCOL 24</h1>
-            <p className="text-muted-foreground text-sm mt-2 text-center uppercase tracking-widest font-semibold flex items-center gap-2">
-               Organized by <span className="text-primary">NullPoint</span>
+            <h1 className="text-2xl font-semibold text-[#1B2533] text-center tracking-tight">Protocol 24</h1>
+            <p className="text-[#64748B] text-sm mt-3 text-center">
+              Sign in to manage your hackathon operations
             </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground ml-1">Username</label>
+              <label className="text-xs font-bold text-[#475569] uppercase tracking-wider ml-0.5">Username</label>
               <div className="relative">
-                <Shield className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="admin, logistics, etc..."
-                  className="w-full h-12 pl-10 pr-4 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="e.g. admin"
+                  className="w-full h-11 px-4 rounded-md bg-white border border-[#CBD5E1] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292] transition-colors"
                   required
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground ml-1">Password</label>
+              <label className="text-xs font-bold text-[#475569] uppercase tracking-wider ml-0.5">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter administrative code..."
-                  className="w-full h-12 pl-10 pr-4 rounded-xl bg-background border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono"
+                  placeholder="••••••••"
+                  className="w-full h-11 px-4 rounded-md bg-white border border-[#CBD5E1] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292] transition-colors font-mono"
                   required
                 />
               </div>
@@ -187,32 +184,32 @@ const AdminAuthPage = () => {
             <button
               type="submit"
               disabled={loading || !password || !username}
-              className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/20"
+              className="w-full h-11 rounded-md bg-[#106292] text-white font-semibold flex items-center justify-center gap-2 hover:bg-[#0D547D] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm mt-2"
             >
-              {loading ? 'Authenticating...' : 'Secure Login'}
-              {!loading && <ArrowRight className="w-5 h-5" />}
+              {loading ? 'Signing in...' : 'Sign In'}
+              {!loading && <ArrowRight className="w-4 h-4 ml-1" />}
             </button>
 
-            <div className="relative flex items-center py-2">
-              <div className="flex-grow border-t border-border"></div>
-              <span className="flex-shrink-0 mx-4 text-xs text-muted-foreground uppercase tracking-widest font-semibold">Or</span>
-              <div className="flex-grow border-t border-border"></div>
+            <div className="relative flex items-center py-4">
+              <div className="flex-grow border-t border-[#E2E8F0]"></div>
+              <span className="flex-shrink-0 mx-4 text-[10px] text-[#94A3B8] uppercase tracking-[0.2em] font-bold">Secure Access</span>
+              <div className="flex-grow border-t border-[#E2E8F0]"></div>
             </div>
 
             <button
               type="button"
               onClick={handleBiometricAuth}
               disabled={loading}
-              className="w-full h-12 rounded-xl bg-secondary text-secondary-foreground font-bold flex items-center justify-center gap-2 hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all border border-border"
+              className="w-full h-11 rounded-md bg-white text-[#1B2533] font-semibold flex items-center justify-center gap-2 hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all border border-[#CBD5E1]"
             >
-              <Fingerprint className="w-5 h-5 text-primary" />
-              {hasPasskey ? 'Login with Fingerprint / Face ID' : 'Register Device Biometrics'}
+              <Fingerprint className="w-4 h-4 text-[#106292]" />
+              {hasPasskey ? 'Biometric Login' : 'Enable Device Access'}
             </button>
           </form>
           
-          <div className="mt-8 text-center border-t border-border pt-6">
-             <p className="text-xs text-muted-foreground flex items-center justify-center gap-2">
-               <Shield className="w-3 h-3" /> Core Team Authorization Required
+          <div className="mt-10 text-center border-t border-[#E2E8F0] pt-6">
+             <p className="text-[10px] text-[#94A3B8] flex items-center justify-center gap-2 font-medium uppercase tracking-wider">
+               <Shield className="w-3 h-3" /> Encrypted Dashboard Session
              </p>
           </div>
         </div>

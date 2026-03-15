@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { supabase } from './supabase';
 
 // Define the shape of our global activity feed
 export interface ActivityLog {
@@ -35,6 +36,7 @@ const DEFAULT_STATE: SharedHackathonState = {
 };
 
 const LOCAL_STORAGE_KEY = 'protocol24_local_state';
+const PROJECT_ID = 'main-project';
 
 interface SharedStateContextType {
   state: SharedHackathonState;
@@ -59,20 +61,45 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
     stateRef.current = state;
   }, [state]);
 
-  const loadFromLocal = useCallback(() => {
+  const loadFromCloud = useCallback(async () => {
     setLoading(true);
+    setSyncStatus('syncing');
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setState(parsed);
-        stateRef.current = parsed;
+      // 1. Try cloud first
+      const { data, error } = await supabase
+        .from('shared_data')
+        .select('data')
+        .eq('project_id', PROJECT_ID)
+        .single();
+
+      if (error) throw error;
+
+      if (data && data.data && Object.keys(data.data).length > 0) {
+        setState(data.data as SharedHackathonState);
+        stateRef.current = data.data as SharedHackathonState;
+        // Keep local storage updated as a backup
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data.data));
+        setSyncStatus('connected');
       } else {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
+        // 2. If cloud is empty, fallback to local and push to cloud
+        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setState(parsed);
+          stateRef.current = parsed;
+          await supabase.from('shared_data').upsert({ project_id: PROJECT_ID, data: parsed });
+        } else {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_STATE));
+        }
       }
     } catch (err) {
-      console.error('Error loading state:', err);
-      toast.error('Failed to load local state');
+      console.error('Error loading cloud state:', err);
+      // Fallback to local
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        setState(JSON.parse(saved));
+      }
+      setSyncStatus('error');
     } finally {
       setLoading(false);
       isLoadedRef.current = true;
@@ -80,8 +107,34 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, []);
 
   useEffect(() => {
-    loadFromLocal();
-  }, [loadFromLocal]);
+    loadFromCloud();
+
+    // Set up Realtime Subscription
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'shared_data',
+          filter: `project_id=eq.${PROJECT_ID}`
+        },
+        (payload) => {
+          if (payload.new && payload.new.data) {
+            const newState = payload.new.data as SharedHackathonState;
+            setState(newState);
+            stateRef.current = newState;
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadFromCloud]);
 
   const updateState = async (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => {
     if (!isLoadedRef.current) return;
@@ -101,14 +154,21 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
       nextState.activityFeed = [newLog, ...nextState.activityFeed].slice(0, 100);
     }
 
-    // Persist to Local Storage
+    // Persist to Cloud & Local Storage
     try {
       setState(nextState);
       stateRef.current = nextState;
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(nextState));
+      
+      const { error } = await supabase
+        .from('shared_data')
+        .upsert({ project_id: PROJECT_ID, data: nextState });
+
+      if (error) throw error;
     } catch (err) {
-      console.error('Local save error:', err);
-      toast.error('Failed to save changes');
+      console.error('Save error:', err);
+      toast.error('Sync failure: working locally');
+      setSyncStatus('error');
     }
   };
 
@@ -130,7 +190,7 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   return (
-    <SharedStateContext.Provider value={{ state, updateState, updatePresence, refresh: () => Promise.resolve(loadFromLocal()), loading, syncStatus }}>
+    <SharedStateContext.Provider value={{ state, updateState, updatePresence, refresh: loadFromCloud, loading, syncStatus }}>
       {children}
     </SharedStateContext.Provider>
   );

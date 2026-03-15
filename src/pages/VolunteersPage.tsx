@@ -107,48 +107,48 @@ const VolunteersPage = () => {
     onBreak: volunteers.filter(v => v.status === 'On Break').length,
   };
 
-  const inputClass = "h-10 px-4 rounded-xl bg-muted/50 border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all";
+  const inputClass = "h-10 px-4 rounded-md bg-white border border-[#CBD5E1] text-[13px] text-[#1B2533] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#106292] focus:ring-1 focus:ring-[#106292]/20 transition-all";
 
   return (
     <div className="space-y-6 animate-fade-up">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
         {[
-          { label: 'Total Volunteers', value: stats.total, icon: Users, color: 'text-primary', bg: 'bg-primary/10' },
-          { label: 'Active Now', value: stats.active, icon: UserCheck, color: 'text-success', bg: 'bg-success/10' },
-          { label: 'On Break', value: stats.onBreak, icon: Shield, color: 'text-amber-500', bg: 'bg-amber-500/10' }
+          { label: 'Total Volunteers', value: stats.total, icon: Users, color: 'text-[#106292]', bg: 'bg-[#106292]/10' },
+          { label: 'Active Personnel', value: stats.active, icon: UserCheck, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+          { label: 'Off-Duty/Break', value: stats.onBreak, icon: Shield, color: 'text-amber-600', bg: 'bg-amber-50' }
         ].map(stat => (
-          <div key={stat.label} className="glass-card rounded-2xl p-4 flex items-center justify-between">
+          <div key={stat.label} className="bg-white rounded-lg p-5 border border-[#E2E8F0] shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-muted-foreground font-medium mb-1">{stat.label}</p>
-              <h4 className="text-2xl font-bold text-foreground">{stat.value}</h4>
+              <p className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider mb-1">{stat.label}</p>
+              <h4 className="text-2xl font-bold text-[#1B2533]">{stat.value}</h4>
             </div>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${stat.bg}`}>
+            <div className={`w-10 h-10 rounded-md flex items-center justify-center ${stat.bg}`}>
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="glass-card rounded-2xl border border-border overflow-hidden">
-        <div className="p-4 border-b border-border flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-card/50 no-print">
-          <h2 className="text-lg font-bold text-foreground">Volunteers & Staff Management</h2>
+      <div className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
+        <div className="p-5 border-b border-[#E2E8F0] flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-white no-print">
+          <h2 className="text-sm font-bold text-[#1B2533] uppercase tracking-[0.1em]">Volunteer Roster</h2>
           
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto text-sm font-semibold">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
               <input
                 type="text"
-                placeholder="Search name or room..."
+                placeholder="Search staff..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
-                className={`${inputClass} pl-9 w-full sm:w-64`}
+                className={`${inputClass} pl-9 w-full sm:w-56`}
               />
             </div>
             
             <select
               value={roleFilter}
               onChange={e => setRoleFilter(e.target.value)}
-              className={`${inputClass} w-full sm:w-40 appearance-none`}
+              className={`${inputClass} w-full sm:w-40 appearance-none font-medium`}
             >
               <option value="All">All Roles</option>
               {roles.map(r => <option key={r} value={r}>{r}</option>)}
@@ -157,59 +157,71 @@ const VolunteersPage = () => {
             {editable && (
               <button 
                 onClick={() => setShowAddForm(!showAddForm)}
-                className="flex items-center justify-center gap-2 h-10 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-all"
+                className="flex items-center justify-center gap-2 h-10 px-5 rounded-md bg-[#106292] text-white text-[13px] font-bold hover:bg-[#0D547D] transition-colors shadow-sm"
               >
-                <Plus className="w-4 h-4" /> Add Volunteer
+                <Plus className="w-4 h-4" /> Recruit Staff
               </button>
             )}
           </div>
         </div>
 
         {showAddForm && (
-          <div className="p-6 bg-muted/10 border-b border-border flex flex-col gap-4 animate-fade-in no-print">
-            <h3 className="text-sm font-bold">Register New Volunteer</h3>
+          <div className="p-6 bg-slate-50 border-b border-[#E2E8F0] flex flex-col gap-5 animate-fade-in no-print ring-1 ring-inset ring-[#E2E8F0]">
+            <h3 className="text-xs font-bold text-[#1B2533] uppercase tracking-wider flex items-center gap-2">
+               <div className="w-1.5 h-3 bg-[#106292] rounded-full" />
+               New Staff Registration
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <input placeholder="Full Name" className={inputClass} value={newVolunteer.name} onChange={e => setNewVolunteer({...newVolunteer, name: e.target.value})} />
-              <select className={inputClass} value={newVolunteer.role} onChange={e => setNewVolunteer({...newVolunteer, role: e.target.value})}>
-                <option value="">Select Role...</option>
-                {roles.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-              <input placeholder="Assigned Room/Area" className={inputClass} value={newVolunteer.assignedRoom} onChange={e => setNewVolunteer({...newVolunteer, assignedRoom: e.target.value})} />
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Legal Name</label>
+                <input placeholder="Full Name" className={inputClass} value={newVolunteer.name} onChange={e => setNewVolunteer({...newVolunteer, name: e.target.value})} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Functional Role</label>
+                <select className={`${inputClass} font-medium`} value={newVolunteer.role} onChange={e => setNewVolunteer({...newVolunteer, role: e.target.value})}>
+                  <option value="">Select Role...</option>
+                  {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-[#64748B] uppercase ml-1">Assignment Area</label>
+                <input placeholder="Room / Zone" className={inputClass} value={newVolunteer.assignedRoom} onChange={e => setNewVolunteer({...newVolunteer, assignedRoom: e.target.value})} />
+              </div>
             </div>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowAddForm(false)} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground">Cancel</button>
-              <button onClick={addVolunteer} className="px-5 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold">Save Volunteer</button>
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => setShowAddForm(false)} className="px-5 py-2 text-[13px] font-bold text-[#64748B] hover:text-[#1B2533]">Cancel</button>
+              <button onClick={addVolunteer} className="px-6 py-2 rounded-md bg-[#106292] text-white text-[13px] font-bold hover:bg-[#0D547D] shadow-sm">Save Personnel</button>
             </div>
           </div>
         )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-muted-foreground bg-muted/30 uppercase border-b border-border">
+            <thead className="text-[11px] font-bold text-[#64748B] bg-[#F8FAFC] uppercase tracking-[0.1em] border-b border-[#E2E8F0]">
               <tr>
-                <th className="px-6 py-4 font-medium">Volunteer Name</th>
-                <th className="px-6 py-4 font-medium">Role</th>
-                <th className="px-6 py-4 font-medium text-center">Assigned Room</th>
-                <th className="px-6 py-4 font-medium text-center">Status</th>
-                <th className="px-6 py-4 font-medium text-right no-print">Actions</th>
+                <th className="px-6 py-4 font-bold">Staff Member</th>
+                <th className="px-6 py-4 font-bold">Designation</th>
+                <th className="px-6 py-4 text-center font-bold">Location</th>
+                <th className="px-6 py-4 text-center font-bold">Current Status</th>
+                <th className="px-6 py-4 text-right no-print font-bold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-y divide-[#F1F5F9] bg-white">
               {filtered.length > 0 ? (
                 filtered.map((v) => (
-                  <tr key={v.id} className="hover:bg-muted/20 transition-colors">
+                  <tr key={v.id} className="hover:bg-[#F8FAFC]/80 transition-colors">
                     <td className="px-6 py-4">
                         {editingId === v.id ? (
                           <input 
-                            className={`${inputClass} w-full h-8`}
+                            className={`${inputClass} w-full h-8 px-2`}
                             value={editForm.name}
                             onChange={e => setEditForm({...editForm, name: e.target.value})}
                           />
                         ) : (
-                          <>
-                            <div className="font-medium text-foreground">{v.name}</div>
-                            <div className="text-[10px] text-muted-foreground opacity-70 uppercase tracking-widest">{v.id.split('-')[0]}</div>
-                          </>
+                          <div>
+                            <div className="font-bold text-[#1B2533]">{v.name}</div>
+                            <div className="text-[10px] text-[#94A3B8] font-bold uppercase tracking-widest mt-0.5">{v.id.split('-')[0]}</div>
+                          </div>
                         )}
                     </td>
                     <td className="px-6 py-4">
@@ -222,20 +234,20 @@ const VolunteersPage = () => {
                           {roles.map(r => <option key={r} value={r}>{r}</option>)}
                         </select>
                       ) : (
-                        <span className="px-2.5 py-1 bg-muted rounded-md text-xs font-medium">{v.role}</span>
+                        <span className="px-2.5 py-1 bg-slate-50 border border-slate-100 rounded-md text-[11px] font-bold text-[#475569] uppercase tracking-tight">{v.role}</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5 text-xs">
+                      <div className="flex items-center justify-center gap-2 text-[12px] font-medium text-[#64748B]">
                           {editingId === v.id ? (
                             <input 
-                              className={`${inputClass} w-full h-8`}
+                              className={`${inputClass} w-full h-8 px-2`}
                               value={editForm.assignedRoom}
                               onChange={e => setEditForm({...editForm, assignedRoom: e.target.value})}
                             />
                           ) : (
                             <>
-                              <MapPin className="w-3 h-3 text-muted-foreground" />
+                              <MapPin className="w-3.5 h-3.5 text-[#94A3B8]" />
                               {v.assignedRoom}
                             </>
                           )}
@@ -246,10 +258,10 @@ const VolunteersPage = () => {
                           value={v.status}
                           disabled={editingId === v.id}
                           onChange={e => updateStatus(v.id, e.target.value as any)}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border appearance-none font-bold outline-none cursor-pointer text-center no-print ${
-                            v.status === 'Active' ? 'bg-success/15 text-success border-success/20' :
-                            v.status === 'On Break' ? 'bg-amber-500/15 text-amber-500 border-amber-500/20' :
-                            'bg-muted text-muted-foreground'
+                          className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border appearance-none outline-none cursor-pointer text-center no-print transition-colors ${
+                            v.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' :
+                            v.status === 'On Break' ? 'bg-amber-50 text-amber-700 border-amber-100' :
+                            'bg-slate-50 text-slate-500 border-slate-100'
                           } ${editingId === v.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           <option value="Active">Active</option>
@@ -264,14 +276,14 @@ const VolunteersPage = () => {
                             <>
                               <button
                                 onClick={saveEdit}
-                                className="p-1.5 rounded-lg text-success hover:bg-success/10 transition-colors"
+                                className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-50 transition-colors"
                                 title="Save"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={cancelEditing}
-                                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted/10 transition-colors"
+                                className="p-1.5 rounded-md text-[#CBD5E1] hover:text-[#475569] hover:bg-slate-50 transition-colors"
                                 title="Cancel"
                               >
                                 <CloseIcon className="w-4 h-4" />
@@ -281,14 +293,14 @@ const VolunteersPage = () => {
                             <>
                               <button
                                 onClick={() => startEditing(v)}
-                                className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                                className="p-1.5 rounded-md text-[#CBD5E1] hover:text-[#106292] hover:bg-[#106292]/5 transition-colors"
                                 title="Edit"
                               >
                                 <Edit2 className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() => deleteVolunteer(v.id, v.name)}
-                                className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                className="p-1.5 rounded-md text-[#CBD5E1] hover:text-rose-600 hover:bg-rose-50 transition-colors"
                                 title="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -302,9 +314,11 @@ const VolunteersPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">
-                    <Users className="w-8 h-8 mx-auto mb-3 opacity-20" />
-                    <p>No volunteers found</p>
+                  <td colSpan={5} className="px-6 py-20 text-center text-[#94A3B8]">
+                     <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Users className="w-8 h-8 opacity-30" />
+                    </div>
+                    <p className="text-sm font-medium">No personnel currently listed</p>
                   </td>
                 </tr>
               )}

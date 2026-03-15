@@ -81,41 +81,42 @@ const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }
 
   return (
     <>
-      <header className="h-16 border-b border-border flex items-center justify-between px-4 md:px-8 glass">
+      <header className="h-16 border-b border-[#E2E8F0] flex items-center justify-between px-4 md:px-8 bg-white shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
         <div className="flex items-center gap-3">
           {isMobile && (
-            <button onClick={onMenuToggle} className="p-2 rounded-xl hover:bg-muted/50 text-muted-foreground">
+            <button onClick={onMenuToggle} className="p-2 rounded-md hover:bg-[#F1F5F9] text-[#64748B]">
               <Menu className="w-5 h-5" />
             </button>
           )}
           <div>
-            <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-            {!isMobile && <p className="text-xs text-muted-foreground">Hackathon Command Center</p>}
+            <h2 className="text-[17px] font-semibold text-[#1B2533]">{title}</h2>
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
           {!isMobile ? (
-            <button
-              onClick={() => setOpen(true)}
-              className="relative flex items-center w-56 h-9 pl-9 pr-4 rounded-xl bg-muted/50 border border-border text-sm text-muted-foreground hover:bg-muted/80 transition-all cursor-pointer"
-            >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <span>Quick search...</span>
-              <kbd className="ml-auto text-[10px] bg-muted/80 px-1.5 py-0.5 rounded border border-border">⌘K</kbd>
-            </button>
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8] transition-colors group-focus-within:text-[#106292]" />
+              <input 
+                onClick={() => setOpen(true)}
+                readOnly
+                placeholder="Search everything..."
+                className="w-64 h-9 pl-9 pr-4 rounded-md bg-[#F8FAFC] border border-[#E2E8F0] text-sm text-[#475569] cursor-pointer hover:bg-white hover:border-[#CBD5E1] transition-all focus:outline-none"
+              />
+              <kbd className="absolute right-3 top-1.5 text-[10px] text-[#94A3B8] font-bold">⌘K</kbd>
+            </div>
           ) : (
-            <button onClick={() => setOpen(true)} className="p-2 rounded-xl hover:bg-muted/50 text-muted-foreground">
+            <button onClick={() => setOpen(true)} className="p-2 rounded-md hover:bg-[#F1F5F9] text-[#64748B]">
               <Search className="w-5 h-5" />
             </button>
           )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             {/* Presence Indicators */}
             {activeUsers.length > 0 && (
-              <div className="hidden lg:flex items-center -space-x-2 mr-2">
+              <div className="hidden lg:flex items-center -space-x-1.5 mr-1">
                 {activeUsers.map(([name, data]) => (
                   <div 
                     key={name}
-                    className="w-7 h-7 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold text-white shadow-sm ring-1 ring-border/10 transition-transform hover:translate-y-[-2px] cursor-help"
+                    className="w-7 h-7 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white shadow-sm"
                     style={{ backgroundColor: (TEAM_ACCOUNTS[data.role as any] || {color: '#888'}).color }}
                     title={`${name} is editing ${data.currentModule}`}
                   >
@@ -125,45 +126,32 @@ const AppHeader = ({ onMenuToggle, isMobile, onActivityToggle, activityVisible }
               </div>
             )}
 
-            <div 
-              className="w-9 h-9 rounded-xl flex items-center justify-center ring-2 ring-background shadow-inner"
-              style={{ backgroundColor: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color + '33' }}
-            >
-              <span className="text-xs font-bold" style={{ color: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color }}>
-                {currentUser.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('') : 'NP'}
-              </span>
-            </div>
-            {!isMobile && (
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-foreground">{currentUser.name || 'NullPoint'}</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider leading-none" style={{ color: (TEAM_ACCOUNTS[currentUser.role as any] || {color: '#888'}).color }}>
-                  {currentUser.role || 'Super Admin'}
+            <div className="flex items-center gap-3 pr-2">
+              <div 
+                className="w-8 h-8 rounded-md flex items-center justify-center border border-[#E2E8F0] bg-[#F8FAFC]"
+              >
+                <span className="text-[11px] font-bold text-[#106292]">
+                  {currentUser.name ? currentUser.name.split(' ').map((n: string) => n[0]).join('') : 'NP'}
                 </span>
               </div>
-            )}
-            {!isMobile && onActivityToggle && (
-              <button
-                onClick={onActivityToggle}
-                className={`p-2 rounded-xl border transition-all ${
-                  activityVisible 
-                    ? 'bg-primary/10 border-primary/20 text-primary' 
-                    : 'border-border text-muted-foreground hover:bg-muted/50'
-                }`}
-                title={activityVisible ? "Hide Activity Feed" : "Show Activity Feed"}
-              >
-                <Activity className="w-4 h-4" />
-              </button>
-            )}
+              {!isMobile && (
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-[#1B2533] leading-tight">{currentUser.name || 'NullPoint User'}</span>
+                  <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wide">
+                    {currentUser.role || 'Member'}
+                  </span>
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => {
                 localStorage.removeItem('protocol24-auth');
                 localStorage.removeItem('protocol24-user');
-                localStorage.removeItem('hackathon_teams');
-                localStorage.removeItem('hackathon_seats');
-                navigate('/login');
-                toast.success('Session Terminated');
+                window.location.href = '/login';
+                toast.success('Signed out safely');
               }}
-              className="ml-2 p-2 rounded-xl border border-border hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all text-muted-foreground"
+              className="p-2 rounded-md text-[#64748B] hover:text-[#EF4444] hover:bg-[#FEE2E2]/30 transition-colors"
               title="Logout"
             >
               <LogOut className="w-4 h-4" />
