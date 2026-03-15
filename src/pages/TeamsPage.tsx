@@ -56,11 +56,12 @@ const TeamsPage = () => {
   };
 
   const removeMember = (teamId: string, pId: string) => {
+    const team = teams.find(t => t.id === teamId);
     updateState(prev => {
       const nextTeams = prev.teams.map(t => t.id === teamId ? { ...t, members: t.members.filter(m => m !== pId) } : t);
       const nextParticipants = prev.participants.map(p => p.id === pId ? { ...p, teamName: null } : p);
       return { ...prev, teams: nextTeams, participants: nextParticipants };
-    }, `removed member from team`);
+    }, `removed ${getParticipant(pId)?.name} from team ${team?.name}`);
     
     toast.info('Member removed from team');
   };

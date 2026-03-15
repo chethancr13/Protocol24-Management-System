@@ -101,7 +101,7 @@ const SeatingManagementPage = () => {
     updateState(prev => ({
         ...prev,
         teams: updatedTeams
-    }), `assigned team ${targetTeam?.name} to ${activeLocation.name}`);
+    }), `assigned team ${targetTeam?.name} to ${activeLocation.name} - Table ${selectedTable.tableNumber}`);
 
     toast.success('Team assigned to table successfully');
     setSelectedTableId(null);

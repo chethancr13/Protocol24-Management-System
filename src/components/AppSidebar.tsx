@@ -1,5 +1,5 @@
 import { NavLink as RouterNavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, UserPlus, Users, Layers, Zap, X, FileCode2, Grid2X2, ClipboardCheck, Wallet, Package, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, UserPlus, Users, Layers, Zap, X, FileCode2, Grid2X2, ClipboardCheck, Wallet, Package, LogOut, ShieldCheck, ScrollText } from 'lucide-react';
 
 const navItems = [
   { title: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
@@ -12,6 +12,7 @@ const navItems = [
   { title: 'Expenses', path: '/admin/expenses', icon: Wallet },
   { title: 'Goods & Logistics', path: '/admin/logistics', icon: Package },
   { title: 'Volunteers', path: '/admin/volunteers', icon: ShieldCheck },
+  { title: 'Audit Logs', path: '/admin/logs', icon: ScrollText },
 ];
 
 interface AppSidebarProps {

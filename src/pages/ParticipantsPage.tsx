@@ -67,7 +67,7 @@ const ParticipantsPage = () => {
       }
 
       return { ...prev, participants: nextParticipants, teams: nextTeams };
-    }, `toggled check-in for ${p.name}`);
+    }, `${p.checkInStatus === 'Checked-In' ? 'checked out' : 'checked in'} participant: ${p.name}`);
   };
 
   const handleAddParticipant = () => {

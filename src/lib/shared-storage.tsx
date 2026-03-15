@@ -134,7 +134,7 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         action: actionDescription,
         timestamp: Date.now()
       };
-      nextState.activityFeed = [newLog, ...nextState.activityFeed].slice(0, 20);
+      nextState.activityFeed = [newLog, ...nextState.activityFeed].slice(0, 100);
     }
 
     // Optimistic local update

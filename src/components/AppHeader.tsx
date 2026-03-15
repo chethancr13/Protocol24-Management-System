@@ -27,6 +27,7 @@ const pageTitles: Record<string, string> = {
   '/admin/expenses': 'Expenses',
   '/admin/logistics': 'Goods & Logistics',
   '/admin/volunteers': 'Volunteers',
+  '/admin/logs': 'Audit Logs',
 };
 
 const pages = [
@@ -40,6 +41,7 @@ const pages = [
   { name: 'Expenses', path: '/admin/expenses' },
   { name: 'Goods & Logistics', path: '/admin/logistics' },
   { name: 'Volunteers', path: '/admin/volunteers' },
+  { name: 'Audit Logs', path: '/admin/logs' },
 ];
 
 interface AppHeaderProps {

@@ -70,7 +70,7 @@ const LogisticsPage = () => {
     updateState(prev => ({
         ...prev,
         logistics: prev.logistics.map(e => e.id === id ? { ...e, status } : e)
-    }), `updated status of ${item?.itemName} to ${status}`);
+    }), `updated status of "${item?.itemName}" to ${status} in ${item?.location}`);
     toast.success('Status updated');
   };
 

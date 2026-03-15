@@ -68,7 +68,7 @@ const ExpensesPage = () => {
     updateState(prev => ({
         ...prev,
         expenses: prev.expenses.map(e => e.id === id ? { ...e, status } : e)
-    }), `updated expense status to ${status}`);
+    }), `updated expense status to ${status} for "${expenses.find(e => e.id === id)?.description}"`);
     toast.success('Status updated');
   };
 

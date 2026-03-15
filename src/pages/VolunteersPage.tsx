@@ -71,7 +71,7 @@ const VolunteersPage = () => {
     updateState(prev => ({
         ...prev,
         volunteers: prev.volunteers.map(vol => vol.id === id ? { ...vol, status } : vol)
-    }), `updated status for ${v?.name} to ${status}`);
+    }), `updated status for "${v?.name}" to ${status} (${v?.role})`);
     toast.success('Status updated');
   };
 
