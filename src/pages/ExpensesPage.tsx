@@ -48,7 +48,7 @@ const ExpensesPage = () => {
     updateState(prev => ({
         ...prev,
         expenses: [...prev.expenses, expense]
-    }), `added expense: ${expense.description} ($${expense.amount})`);
+    }), `added expense: ${expense.description} (₹${expense.amount})`);
     
     toast.success('Expense added successfully');
     setNewExpense({ description: '', category: '', amount: 0, status: 'Pending' });
@@ -85,9 +85,9 @@ const ExpensesPage = () => {
       {/* Stats row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 no-print">
         {[
-          { label: 'Total Budget Used', value: `$${stats.totalSpent.toLocaleString()}`, icon: Wallet, color: 'text-primary', bg: 'bg-primary/10' },
-          { label: 'Total Paid out', value: `$${stats.paid.toLocaleString()}`, icon: Banknote, color: 'text-success', bg: 'bg-success/10' },
-          { label: 'Pending Invoice/Payment', value: `$${stats.pending.toLocaleString()}`, icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/10' }
+          { label: 'Total Budget Used', value: `₹${stats.totalSpent.toLocaleString()}`, icon: Wallet, color: 'text-primary', bg: 'bg-primary/10' },
+          { label: 'Total Paid out', value: `₹${stats.paid.toLocaleString()}`, icon: Banknote, color: 'text-success', bg: 'bg-success/10' },
+          { label: 'Pending Invoice/Payment', value: `₹${stats.pending.toLocaleString()}`, icon: CreditCard, color: 'text-amber-500', bg: 'bg-amber-500/10' }
         ].map(stat => (
           <div key={stat.label} className="glass-card rounded-2xl p-4 flex items-center justify-between">
             <div>
@@ -156,7 +156,7 @@ const ExpensesPage = () => {
                 <option value="">Select Category...</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
-              <input type="number" placeholder="Amount ($)" className={inputClass} value={newExpense.amount || ''} onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})} />
+              <input type="number" placeholder="Amount (₹)" className={inputClass} value={newExpense.amount || ''} onChange={e => setNewExpense({...newExpense, amount: Number(e.target.value)})} />
               <select className={inputClass} value={newExpense.status} onChange={e => setNewExpense({...newExpense, status: e.target.value as ExpenseStatus})}>
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
@@ -197,7 +197,7 @@ const ExpensesPage = () => {
                     <td className="px-6 py-4">
                       <span className="px-2.5 py-1 bg-muted rounded-md text-xs">{exp.category}</span>
                     </td>
-                    <td className="px-6 py-4 font-semibold text-foreground">${exp.amount.toLocaleString()}</td>
+                    <td className="px-6 py-4 font-semibold text-foreground">₹{exp.amount.toLocaleString()}</td>
                     <td className="px-6 py-4 text-muted-foreground text-xs whitespace-nowrap">
                       {new Date(exp.date).toLocaleDateString()}
                     </td>

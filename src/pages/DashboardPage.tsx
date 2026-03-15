@@ -68,7 +68,7 @@ const DashboardPage = () => {
         {[
           { label: 'Registered', value: participantCount, icon: Users, info: `${checkedInCount} checked in`, color: 'text-blue-500', bg: 'bg-blue-500/10' },
           { label: 'Teams', value: teams.length, icon: Layers, info: `${submissions.length} submitted`, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-          { label: 'Budget Used', value: `$${totalBudget.toLocaleString()}`, icon: Wallet, info: `$${paidBudget.toLocaleString()} strictly paid`, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+          { label: 'Budget Used', value: `₹${totalBudget.toLocaleString()}`, icon: Wallet, info: `₹${paidBudget.toLocaleString()} strictly paid`, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
           { label: 'Pending Items', value: pendingLogisticsCount, icon: Box, info: `${logistics.length} item types`, color: 'text-amber-500', bg: 'bg-amber-500/10' },
           { label: 'Volunteers', value: volunteers.length, icon: ShieldCheck, info: `${volunteers.filter(v => v.status === 'Active').length} active now`, color: 'text-indigo-500', bg: 'bg-indigo-500/10' }
         ].map(stat => (
@@ -153,7 +153,7 @@ const DashboardPage = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => `$${value.toLocaleString()}`}
+                    formatter={(value: number) => `₹${value.toLocaleString()}`}
                     contentStyle={{ backgroundColor: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: '12px', color: 'hsl(var(--foreground))' }}
                   />
                   <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', color: 'hsl(var(--muted-foreground))' }}/>
