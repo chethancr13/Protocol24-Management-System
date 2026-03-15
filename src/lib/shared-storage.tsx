@@ -41,7 +41,9 @@ interface SharedStateContextType {
   state: SharedHackathonState;
   updateState: (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => Promise<void>;
   updatePresence: (module: string) => void;
+  refresh: () => Promise<void>;
   loading: boolean;
+  syncStatus: 'connected' | 'error' | 'syncing';
 }
 
 const SharedStateContext = createContext<SharedStateContextType | undefined>(undefined);
@@ -49,6 +51,7 @@ const SharedStateContext = createContext<SharedStateContextType | undefined>(und
 export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<SharedHackathonState>(DEFAULT_STATE);
   const [loading, setLoading] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<'connected' | 'error' | 'syncing'>('syncing');
   const isLoadedRef = useRef(false);
   const stateRef = useRef<SharedHackathonState>(DEFAULT_STATE);
 
@@ -57,34 +60,41 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
     stateRef.current = state;
   }, [state]);
 
-  // Initial load from Supabase
-  useEffect(() => {
-    const fetchInitialState = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('shared_data')
-          .select('data')
-          .eq('id', STATE_ID)
-          .single();
+  const fetchInitialState = useCallback(async (isSilent = false) => {
+    if (!isSilent) setLoading(true);
+    setSyncStatus('syncing');
+    
+    try {
+      const { data, error } = await supabase
+        .from('shared_data')
+        .select('data')
+        .eq('id', STATE_ID)
+        .single();
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            await supabase.from('shared_data').insert({ id: STATE_ID, data: DEFAULT_STATE });
-          } else {
-            console.error('Error fetching initial state:', error);
-          }
-        } else if (data) {
-          setState(data.data);
-          stateRef.current = data.data;
+      if (error) {
+        if (error.code === 'PGRST116') {
+          await supabase.from('shared_data').insert({ id: STATE_ID, data: DEFAULT_STATE });
+          setSyncStatus('connected');
+        } else {
+          console.error('Error fetching initial state:', error);
+          setSyncStatus('error');
         }
-      } catch (err) {
-        console.error('Supabase fetch error:', err);
-      } finally {
-        setLoading(false);
-        isLoadedRef.current = true;
+      } else if (data) {
+        setState(data.data);
+        stateRef.current = data.data;
+        setSyncStatus('connected');
       }
-    };
+    } catch (err) {
+      console.error('Supabase fetch error:', err);
+      setSyncStatus('error');
+    } finally {
+      if (!isSilent) setLoading(false);
+      isLoadedRef.current = true;
+    }
+  }, []);
 
+  // Initial load and Realtime setup
+  useEffect(() => {
     fetchInitialState();
 
     const channel = supabase
@@ -100,20 +110,35 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         (payload) => {
           if (payload.new && (payload.new as any).data) {
             const newData = (payload.new as any).data;
-            // Prevent redundant updates if we already have this data
             if (JSON.stringify(newData) !== JSON.stringify(stateRef.current)) {
               setState(newData);
               stateRef.current = newData;
+              setSyncStatus('connected');
             }
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setSyncStatus('connected');
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSyncStatus('error');
+      });
+
+    // Re-sync on tab focus
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchInitialState(true);
+      }
+    };
+    
+    window.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
 
     return () => {
       supabase.removeChannel(channel);
+      window.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
     };
-  }, []);
+  }, [fetchInitialState]);
 
   const updateState = async (updater: (prev: SharedHackathonState) => SharedHackathonState, actionDescription?: string) => {
     // CRITICAL: Don't allow updates until we've loaded the current state from Supabase
@@ -147,9 +172,7 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
         .from('shared_data')
         .upsert({ 
           id: STATE_ID, 
-          data: nextState, 
-          updated_at: new Date().toISOString(),
-          updated_by: currentUser.name || 'system'
+          data: nextState
         });
 
       if (error) {
@@ -180,7 +203,7 @@ export const SharedStateProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   return (
-    <SharedStateContext.Provider value={{ state, updateState, updatePresence, loading }}>
+    <SharedStateContext.Provider value={{ state, updateState, updatePresence, refresh: () => fetchInitialState(), loading, syncStatus }}>
       {children}
     </SharedStateContext.Provider>
   );
